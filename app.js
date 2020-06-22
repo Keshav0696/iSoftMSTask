@@ -9,6 +9,8 @@ var session = require('express-session');
 var passport = require('passport');
 require('./models/User');
 require('./models/Role');
+require('./models/Vendor');
+require('./models/Operator');
 const User = mongoose.model('User')
 const passportJWT = require("passport-jwt");
 const JWTStrategy   = passportJWT.Strategy;
@@ -20,7 +22,7 @@ passport.use(new JWTStrategy({
     function (jwtPayload, cb) {
 
         //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
-        return User.find({_id : jwtPayload.user._id})
+        return User.findOne({_id : jwtPayload.user._id}).populate("roleId")
             .then(user => {
                 return cb(null, user);
             })
@@ -65,10 +67,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
+var vendorRouter = require('./routes/vendor');
+var operatorRouter = require('./routes/operator');
 
+function jwt (req, res, next){
+  passport.authenticate('jwt', { session: false }, function(err, user, info) { 
+      if (err) { return next(err); } 
+      if (!user) { return res.send("Custom Unauthorised").end(); } 
+      // edit as per comment
+      //return res.send("Test Route Accessed").end();
+      req.user = user;   // Forward user information to the next middleware
+      next();
+  })(req, res, next);
+}
 app.use('/', indexRouter);
-app.use('/user', passport.authenticate('jwt', {session: false}), usersRouter);
+app.use('/user', jwt, usersRouter);
 app.use('/auth', authRouter);
+app.use('/vendor',jwt, vendorRouter);
+app.use('/operator',jwt, operatorRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

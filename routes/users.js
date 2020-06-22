@@ -87,6 +87,36 @@ router.post('/editUser', async function (req, res) {
     }
   }
 })
+router.post('/activeDeactivate', async function (req, res) {
+  if (req.body.userId) {
+    let userId = req.body.userId;
+    var edited = await User.findByIdAndUpdate(userId, {
+      $set: {status : req.body.status}
+    },
+      {
+        new: true
+      })
+    if (edited) {
+      res.send(edited);
+    } else {
+      res.status(500).send("{errors: \"User not  foundh\"}").end()
+    }
+  }
+})
+
+router.get('/deleteUser/:id', async function (req, res) {
+  if (req.params.id) {
+    var userId = req.params.id;
+    var removed = await User.remove({ _id: userId });
+    if (removed.deletedCount) {
+      res.send(removed);
+    } else {
+      res.status(500).send("{errors: \"User Id does not exist\"}").end()
+    }
+  } else {
+    res.status(500).send("{errors: \"Please send User Id\"}").end()
+  }
+})
 
 
 router.post('/addRoles', async function (req, res) {
@@ -138,7 +168,7 @@ router.post('/editRole', async function (req, res) {
   }
 })
 
-router.get('/deleteRole/:id', passport.authenticate('jwt', { session: false }), async function (req, res) {
+router.get('/deleteRole/:id', async function (req, res) {
   if (req.params.id) {
     var roleId = req.params.id;
     var removed = await Role.remove({ _id: roleId });

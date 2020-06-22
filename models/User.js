@@ -8,7 +8,8 @@ var UserSchema = mongoose.Schema({
     index:true
   },
   roleId : {
-    type: mongoose.Types.ObjectId
+    type: mongoose.Schema.Types.ObjectId,
+    ref : 'Role'
   },
   address : String,
   phoneNo : String,
@@ -19,7 +20,11 @@ var UserSchema = mongoose.Schema({
     type: String
   },
   facebookId : String,
-  status  :  String,
+  status  : {
+   type : String,
+   enum : ["active", "deactive"],
+   default : "active"
+  },
   token: String,
   type : String
 
