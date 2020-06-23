@@ -23,7 +23,7 @@ router.get('/getAllUsers', async function (req, res) {
   if (users && users.length) {
     res.status(200).send({ status: 200, data: users }).end()
   } else {
-    res.status(500).send("{errors: \"Users not  found\"}").end()
+    res.status(500).send({ status: 500, data: null, message: "User not  found" }).end()
   }
 });
 
@@ -83,7 +83,7 @@ router.post('/editUser', async function (req, res) {
     if (edited) {
       res.send(edited);
     } else {
-      res.status(500).send("{errors: \"User not  foundh\"}").end()
+      res.status(500).send({status: 500, data: null, message: "User not  found"}).end()
     }
   }
 })
@@ -99,7 +99,7 @@ router.post('/activeDeactivate', async function (req, res) {
     if (edited) {
       res.send(edited);
     } else {
-      res.status(500).send("{errors: \"User not  foundh\"}").end()
+      res.status(500).send({status: 500, data: null, message: "User not  found"}).end()
     }
   }
 })
@@ -111,10 +111,10 @@ router.get('/deleteUser/:id', async function (req, res) {
     if (removed.deletedCount) {
       res.send(removed);
     } else {
-      res.status(500).send("{errors: \"User Id does not exist\"}").end()
+      res.status(500).send({status: 500, data: null, message: "User Id does not exist"}).end()
     }
   } else {
-    res.status(500).send("{errors: \"Please send User Id\"}").end()
+    res.status(500).send({status: 500, data: null, message: "Please send User Id"}).end()
   }
 })
 
@@ -131,10 +131,10 @@ router.post('/addRoles', async function (req, res) {
       if (saved) {
         res.send(saved);
       } else {
-        res.status(500).send("{errors: \"Error with saving Roles\"}").end()
+        res.status(500).send({status: 500, data: null, message: "Error with saving Roles"}).end()
       }
     }else{
-      res.status(500).send("{errors: \"Role already Exist\"}").end()
+      res.status(500).send({status: 500, data: null, message: "Role already Exist"}).end()
     }
 
   }
@@ -145,7 +145,7 @@ router.get('/getAllRoles',  async function (req, res) {
   if (allROles && allROles.length) {
     res.send(allROles);
   } else {
-    res.status(500).send("{errors: \"No Roles Found\"}").end()
+    res.status(500).send({status: 500, data: null, message: "No Roles Found"}).end()
   }
 })
 
@@ -163,7 +163,7 @@ router.post('/editRole', async function (req, res) {
     if (edited) {
       res.send(edited);
     } else {
-      res.status(500).send("{errors: \"Role not  foundh\"}").end()
+      res.status(500).send({status: 500, data: null, message: "No Roles Found"}).end()
     }
   }
 })
@@ -175,10 +175,10 @@ router.get('/deleteRole/:id', async function (req, res) {
     if (removed.deletedCount) {
       res.send(removed);
     } else {
-      res.status(500).send("{errors: \"Role Id does not exist\"}").end()
+      res.status(500).send({status: 500, data: null, message: "Role Id not Exist"}).end()
     }
   } else {
-    res.status(500).send("{errors: \"Please send Role Id\"}").end()
+    res.status(500).send({status: 500, data: null, message: "Please send Role Id"}).end()
   }
 })
 

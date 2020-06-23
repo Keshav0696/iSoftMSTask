@@ -104,9 +104,9 @@ res.send(null)
 });
 
 passport.use(new FacebookStrategy({
-    clientID: "142388747089656",
-    clientSecret: "d84c0f739aae53aa4249ea79c8ee53aa",
-    callbackURL: "http://localhost:3000/auth/facebook/callback"
+    clientID: "188022502647729",
+    clientSecret: "33a4a4b7898c5d86eca6f3335cbbebd1",
+    callbackURL: "http://localhost:3200/auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
@@ -146,6 +146,23 @@ passport.use(new FacebookStrategy({
   }
 ));
 
+
+
+// router.get(
+//   "/auth/facebook/callback",
+//   passport.authenticate("facebook", {
+//     successRedirect: "/",
+//     failureRedirect: "/fail"
+//   })
+// );
+
+// router.get("/fail", (req, res) => {
+//   res.send("Failed attempt");
+// });
+
+// router.get("/", (req, res) => {
+//   res.send("Success");
+// });
 router.get('/facebook',
   passport.authenticate('facebook'));
 

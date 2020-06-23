@@ -18,13 +18,13 @@ router.post('/addVendor', async function (req, res) {
         if(saved){
             res.status(200).json(saved);
         }else{
-         res.status(500).json({message : "Error with saving Vendors"});
+         res.status(500).json({ status: 500, data: null, message: "Error with saving Vendors" });
         }
     }else{
-        res.status(500).json({message : "Vendor already Exist"});
+        res.status(500).json({ status: 500, data: null, message: "Vendor already Exist" });
     }
    }else{
-    res.status(500).json({message : "Data not validated"});
+    res.status(500).json({ status: 500, data: null, message: "Data not validated" });
    } 
 });
 
@@ -42,10 +42,10 @@ router.post('/editVendor', async function (req, res) {
  if(edited){
      res.send(edited);
  }else{
-    res.status(500).json({ message: 'Problem with Update' });
+    res.status(500).json({status: 500, data: null, message: 'Problem with Update' });
  }
     }else{
-        res.status(500).json({ message: 'Please send valid data' });
+        res.status(500).json({status: 500, data: null, message: 'Please send valid data' });
     }
 });
 
@@ -60,10 +60,10 @@ router.get('/deleteVendor/:id', async function (req, res) {
       if (removed.deletedCount) {
         res.send(removed);
       } else {
-        res.status(500).send("{errors: \"Vendor Id does not exist\"}").end()
+        res.status(500).send({status: 500, data: null, message: 'Vendor Id does not exist' }).end()
       }
     } else {
-      res.status(500).send("{errors: \"Please send Vendor Id\"}").end()
+      res.status(500).send({status: 500, data: null, message: 'Please send Vendor Id' }).end()
     }
   })
 
@@ -80,7 +80,7 @@ router.get('/deleteVendor/:id', async function (req, res) {
       if (edited) {
         res.send(edited);
       } else {
-        res.status(500).send("{errors: \"Vendor not  foundh\"}").end()
+        res.status(500).send({status: 500, data: null, message: 'Vendor not  found' }).end()
       }
     }
   })

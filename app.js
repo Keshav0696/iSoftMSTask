@@ -80,6 +80,9 @@ function jwt (req, res, next){
       next();
   })(req, res, next);
 }
+app.get('/auth/facebook/callback', function(req, res){
+  res.send("Success")
+})
 app.use('/', indexRouter);
 app.use('/user', jwt, usersRouter);
 app.use('/auth', authRouter);
