@@ -11,7 +11,7 @@ router.post('/addVendor', async function (req, res) {
 
    let body = req.body;
    let found = await Vendor.findOne({ email : body.email})
-   if(body && req.user.roleId && req.user.roleId._doc.name == 'VENDOR'){
+   if(body && req.user.role=='ADMIN'){
     if(!found){
         let toSave = new Vendor(body);
         let saved  = await toSave.save()
@@ -30,8 +30,7 @@ router.post('/addVendor', async function (req, res) {
 
 router.post('/editVendor', async function (req, res) {
     let body  = req.body;
-    if(body  && body.data && body.vendorId && 
-        req.user.roleId && req.user.roleId._doc.name == 'VENDOR'){
+    if(body  && body.data && body.vendorId && req.user == 'ADMIN'){
    let edited = await Vendor.findByIdAndUpdate(body.vendorId, {
        $set: body.data
    },
@@ -52,7 +51,7 @@ router.post('/editVendor', async function (req, res) {
 router.get('/deleteVendor/:id', async function (req, res) {
     if (req.params.id) {
       var vendorId = req.params.id;
-      if(req.user.roleId && req.user.roleId._doc.name == 'VENDOR'){
+      if(req.user.role== 'ADMIN'){
       var removed = await Vendor.remove({ _id: vendorId });
       }else{
         res.status(500).send("{errors: \"User Role Not Valid\"}").end()
