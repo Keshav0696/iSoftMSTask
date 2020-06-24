@@ -8,7 +8,6 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
 require('./models/User');
-require('./models/Role');
 require('./models/Vendor');
 require('./models/Operator');
 require('./models/ShipmentMode');
@@ -24,7 +23,7 @@ passport.use(new JWTStrategy({
     function (jwtPayload, cb) {
 
         //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
-        return User.findOne({_id : jwtPayload.user._id}).populate("roleId")
+        return User.findOne({_id : jwtPayload.user._id})
             .then(user => {
                 return cb(null, user);
             })

@@ -28,6 +28,8 @@ passport.serializeUser(function(user, done) {
 // Register User
 router.post('/register', async function(req, res){
      var body = req.body;
+     body.role = 'MEMBER';
+     body.status = 'active';
      body.type = 'local';
       var newUser = new User(body);
       var found = await User.findOne({ email: req.body.email})

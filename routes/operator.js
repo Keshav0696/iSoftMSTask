@@ -10,7 +10,7 @@ router.post('/addOperator', async function (req, res) {
 
    let body = req.body;
    let found = await Operator.findOne({email : body.email})
-   if(body){
+   if(body && req.user.role=='ADMIN'){
     if(!found){
         let toSave = new Operator(body);
         let saved  = await toSave.save()
@@ -29,7 +29,7 @@ router.post('/addOperator', async function (req, res) {
 
 router.post('/editOperator', async function (req, res) {
     let body  = req.body;
-    if(body && body.data && body.operatorId){
+    if(body && body.data && body.operatorId && req.user.role=='ADMIN'){
     let edited = await  Operator.findByIdAndUpdate(body.operatorId, {
        $set: body.data
    },
@@ -64,7 +64,7 @@ router.post('/activeDeactivate', async function (req, res) {
   })
 
 router.get('/deleteOperator/:id', async function (req, res) {
-    if (req.params.id) {
+    if (req.params.id && req.user.role=='ADMIN') {
       var operatorId = req.params.id;
       var removed = await Operator.remove({ _id: operatorId });
       if (removed.deletedCount) {

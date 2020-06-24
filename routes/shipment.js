@@ -6,7 +6,7 @@ var Shipment = mongoose.model('Shipment');
 
 router.post('/addShipment', async function (req, res) {
     let body = req.body;
-         let toSave = new ShipmentMode(body);
+         let toSave = new Shipment(body);
          let saved  = await toSave.save()
          if(saved){
              res.status(200).json(saved);

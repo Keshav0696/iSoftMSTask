@@ -9,7 +9,7 @@ router.post('/addShipmentMode', async function (req, res) {
 
    let body = req.body;
    let found = await ShipmentMode.findOne({ name : body.name})
-   if(body && req.user.roleId && req.user.roleId._doc.name == 'ADMIN'){
+   if(body &&  req.user.role == 'ADMIN'){
     if(!found){
         let toSave = new ShipmentMode(body);
         let saved  = await toSave.save()
@@ -29,7 +29,7 @@ router.post('/addShipmentMode', async function (req, res) {
 router.get('/getAllShipmentMode', async function (req, res) {
 
     let found = await ShipmentMode.find({})
-    if(req.user.roleId && req.user.roleId._doc.name == 'ADMIN'){
+    if(req.user && req.user.role == 'ADMIN'){
      if(found){
         res.status(200).json(found);
      }else{

@@ -7,9 +7,9 @@ var UserSchema = mongoose.Schema({
     type: String,
   },
   lastname: String,
-  roleId : {
-    type: mongoose.Schema.Types.ObjectId,
-    ref : 'Role'
+  role : {
+    type : String,
+    enum : ["MEMBER", "ADMIN", "VENDOR", "OPERATOR"]
   },
   address : String,
   phoneNo : String,
@@ -48,7 +48,7 @@ module.exports.getUserByUsername = function(username, callback){
 
   module.exports.getUserByEmail = function(username, callback){
     var query = {email: username};
-    User.findOne(query, callback).populate("roleId");
+    User.findOne(query, callback);
   }
   
   module.exports.getUserById = function(id, callback){

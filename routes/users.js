@@ -3,7 +3,6 @@ var router = express.Router();
 var passport = require('passport');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const Role = mongoose.model('Role');
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   res.send('respond with a resource');
@@ -11,14 +10,7 @@ router.get('/', function (req, res, next) {
 
 
 router.get('/getAllUsers', async function (req, res) {
-  let users = await User.aggregate([{
-    "$lookup": {
-      "from": "roles",
-      "localField": "roleId",
-      "foreignField": "_id",
-      "as": "roleObject"
-    }
-  }])
+  let users = await User.find({})
 
   if (users && users.length) {
     res.status(200).send({ status: 200, data: users }).end()
@@ -31,18 +23,7 @@ router.get('/getAllUsers', async function (req, res) {
 router.get('/getUserById/:id', async function (req, res) {
   try {
     var userId = req.params.id
-    let user = await User.aggregate([
-      {
-        $match: { _id: mongoose.Types.ObjectId(userId) }
-      },
-      {
-        "$lookup": {
-          "from": "roles",
-          "localField": "roleId",
-          "foreignField": "_id",
-          "as": "roleObject"
-        }
-      }]);
+    let user = await User.findOne({_id: userId});
     if (user && user.length) {
       res.status(200).send({ status: 200, data: user }).end()
     } else {
@@ -56,7 +37,8 @@ router.get('/getUserById/:id', async function (req, res) {
 
 
 router.post('/createUser', async function(req, res){
-    req.body.type = 'local'
+    req.body.type = 'local';
+    req.body.status = 'active';
     var newUser = new User(req.body);
     var found = await User.findOne({ email: req.body.email})
   if(!found){
@@ -118,69 +100,6 @@ router.get('/deleteUser/:id', async function (req, res) {
   }
 })
 
-
-router.post('/addRoles', async function (req, res) {
-  if (req.body) {
-    let dataSet = req.body;
-    let found = await Role.findOne({name : dataSet.name});
-    if(!found){
-      var roleToSave = new Role(dataSet);
-      if (roleToSave) {
-        var saved = await roleToSave.save()
-      }
-      if (saved) {
-        res.send(saved);
-      } else {
-        res.status(500).send({status: 500, data: null, message: "Error with saving Roles"}).end()
-      }
-    }else{
-      res.status(500).send({status: 500, data: null, message: "Role already Exist"}).end()
-    }
-
-  }
-})
-
-router.get('/getAllRoles',  async function (req, res) {
-  let allROles = await Role.find({});
-  if (allROles && allROles.length) {
-    res.send(allROles);
-  } else {
-    res.status(500).send({status: 500, data: null, message: "No Roles Found"}).end()
-  }
-})
-
-
-router.post('/editRole', async function (req, res) {
-  if (req.body.data && req.body._id) {
-    let roleId = req.body._id;
-    let roleSet = req.body.data;
-    var edited = await Role.findByIdAndUpdate(roleId, {
-      $set: roleSet
-    },
-      {
-        new: true
-      })
-    if (edited) {
-      res.send(edited);
-    } else {
-      res.status(500).send({status: 500, data: null, message: "No Roles Found"}).end()
-    }
-  }
-})
-
-router.get('/deleteRole/:id', async function (req, res) {
-  if (req.params.id) {
-    var roleId = req.params.id;
-    var removed = await Role.remove({ _id: roleId });
-    if (removed.deletedCount) {
-      res.send(removed);
-    } else {
-      res.status(500).send({status: 500, data: null, message: "Role Id not Exist"}).end()
-    }
-  } else {
-    res.status(500).send({status: 500, data: null, message: "Please send Role Id"}).end()
-  }
-})
 
 
 // // Endpoint to get current user
