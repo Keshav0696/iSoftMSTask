@@ -17,13 +17,13 @@ router.post('/addOperator', async function (req, res) {
         if(saved){
             res.status(200).json(saved);
         }else{
-         res.status(500).json({message : "Error with saving Operators"});
+         res.status(500).json({ status : 500, message: 'Error with saving Operators' });
         }
     }else{
-        res.status(500).json({message : "Operator already Exist"});
+        res.status(500).json({ status : 500, message: 'Operator already Exist' });
     }
    }else{
-    res.status(500).json({message : "Data not validated"});
+    res.status(500).json({status : 500, message : "Data not validated"});
    } 
 });
 
@@ -39,10 +39,10 @@ router.post('/editOperator', async function (req, res) {
    if(edited){
     res.send(edited);
 }else{
-   res.status(500).json({ message: 'Problem with Update' });
+   res.status(500).json({status : 500, message: 'Problem with Update' });
 }
     }else{
-        res.status(500).json({ message: 'Please send valid data' });
+        res.status(500).json({status : 500, message: 'Please send valid data' });
     }
 });
 
@@ -58,7 +58,7 @@ router.post('/activeDeactivate', async function (req, res) {
       if (edited) {
         res.send(edited);
       } else {
-        res.status(500).send("{errors: \"Operator not  foundh\"}").end()
+        res.status(500).json({status : 500, message: 'Operator not  found' }).end()
       }
     }
   })
@@ -70,10 +70,10 @@ router.get('/deleteOperator/:id', async function (req, res) {
       if (removed.deletedCount) {
         res.send(removed);
       } else {
-        res.status(500).send("{errors: \"Operator Id does not exist\"}").end()
+        res.status(500).json({status : 500, message: 'Operator Id does not exist' }).end()
       }
     } else {
-      res.status(500).send("{errors: \"Please send Operator Id\"}").end()
+      res.status(500).json({status : 500, message: 'Please send Operator Id' }).end()
     }
   })
 

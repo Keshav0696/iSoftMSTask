@@ -27,18 +27,9 @@ passport.serializeUser(function(user, done) {
 
 // Register User
 router.post('/register', async function(req, res){
-    var password = req.body.password;
-    var password2 = req.body.password2;
-  
-    if (password == password2){
-      var newUser = new User({
-        fullname: req.body.fullname,
-        email: req.body.email,
-        password: req.body.password,
-        roleId: req.body.roleId,
-        status : req.body.status,
-        type :'local'
-      });
+     var body = req.body;
+     body.type = 'local';
+      var newUser = new User(body);
       var found = await User.findOne({ email: req.body.email})
     if(!found){
       User.createUser(newUser, function(err, user){
@@ -49,9 +40,7 @@ router.post('/register', async function(req, res){
     else{
       res.status(500).send({status: 500, data: null, message: "User already exist"}).end()
     }
-    } else{
-      res.status(500).send({status: 500, data: null, message: "Password not match"}).end()
-    }
+
   });
 
 
@@ -72,16 +61,20 @@ router.post('/login', function (req, res, next) {
          }
          // generate a signed son web token with the contents of user object and return it in the response
          const token = jwt.sign({user}, '8A169E5DFB4F18C678DBAD19A4B4A17F1F8154713192E618DCDBF7D8C9E9ABA4');
-         return res.json({ status : 200, user, token});
+         user.token = token;
+         return res.json({ status : 200, user});
       });
   })(req, res);
 });
 
 
     var LocalStrategy = require('passport-local').Strategy;
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.getUserByEmail(username, function(err, user){
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+},
+  function(email, password, done) {
+    User.getUserByEmail(email, function(err, user){
       if(err) throw err;
       if(!user){
         return done(null, false, {message: 'Unknown User'});
@@ -104,9 +97,9 @@ res.send(null)
 });
 
 passport.use(new FacebookStrategy({
-    clientID: "142388747089656",
-    clientSecret: "d84c0f739aae53aa4249ea79c8ee53aa",
-    callbackURL: "http://localhost:3000/auth/facebook/callback"
+    clientID: "188022502647729",
+    clientSecret: "33a4a4b7898c5d86eca6f3335cbbebd1",
+    callbackURL: "http://localhost:3200/auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
@@ -137,7 +130,7 @@ passport.use(new FacebookStrategy({
   passport.use(new GoogleStrategy({
     clientID: "930205980963-dhp4ejdi8kfmer9ttt9h534flfu1efv1.apps.googleusercontent.com",
     clientSecret: "awKNylRbknwg-U5qZcUlmH_u",
-    callbackURL: "http://localhost:3000/auth/google/callback"
+    callbackURL: "http://localhost:3200/auth/google/callback"
   },
   function(token, tokenSecret, profile, done) {
       User.findOrCreate({ googleId: profile.id }, function (err, user) {
@@ -146,6 +139,23 @@ passport.use(new FacebookStrategy({
   }
 ));
 
+
+
+// router.get(
+//   "/auth/facebook/callback",
+//   passport.authenticate("facebook", {
+//     successRedirect: "/",
+//     failureRedirect: "/fail"
+//   })
+// );
+
+// router.get("/fail", (req, res) => {
+//   res.send("Failed attempt");
+// });
+
+// router.get("/", (req, res) => {
+//   res.send("Success");
+// });
 router.get('/facebook',
   passport.authenticate('facebook'));
 

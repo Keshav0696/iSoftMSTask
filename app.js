@@ -11,6 +11,8 @@ require('./models/User');
 require('./models/Role');
 require('./models/Vendor');
 require('./models/Operator');
+require('./models/ShipmentMode');
+require('./models/Shipment');
 const User = mongoose.model('User')
 const passportJWT = require("passport-jwt");
 const JWTStrategy   = passportJWT.Strategy;
@@ -69,7 +71,8 @@ var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var vendorRouter = require('./routes/vendor');
 var operatorRouter = require('./routes/operator');
-
+var shipmentModeRouter = require('./routes/shipmentMode');
+var shipmentRouter = require('./routes/shipment');
 function jwt (req, res, next){
   passport.authenticate('jwt', { session: false }, function(err, user, info) { 
       if (err) { return next(err); } 
@@ -80,11 +83,19 @@ function jwt (req, res, next){
       next();
   })(req, res, next);
 }
+app.get('/auth/facebook/callback', function(req, res){
+  res.send("Success")
+})
+app.get('/auth/google/callback', function(req, res){
+  res.send("Success")
+})
 app.use('/', indexRouter);
 app.use('/user', jwt, usersRouter);
 app.use('/auth', authRouter);
 app.use('/vendor',jwt, vendorRouter);
 app.use('/operator',jwt, operatorRouter);
+app.use('/shipmode',jwt, shipmentModeRouter);
+app.use('/shipment',jwt, shipmentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -17,7 +17,7 @@ var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 
-const connString = "mongodb+srv://project-test:projectTest123@kgcluster-0u5qd.mongodb.net/test?retryWrites=true&w=majority";
+const connString = "mongodb://localhost:27017/testLogin";
 mongoose.connect(connString, function(err){
     if(!err){
         console.log("Mongoose connected");
