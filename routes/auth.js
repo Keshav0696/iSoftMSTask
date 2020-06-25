@@ -7,7 +7,7 @@ var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var bcrypt = require('bcryptjs');
-
+const config = require('../config')
 const nodemailer = require('nodemailer');
 const passwordResetToken = require('../models/ResetPassword');
 const jwt = require('jsonwebtoken');
@@ -203,12 +203,12 @@ router.get('/google/callback',
         res.status(200).json({ status : 200, message: 'Reset Password successfully.' });
         let testAccount = await nodemailer.createTestAccount();
         var transporter = nodemailer.createTransport({
-          host: 'smtp.gmail.com',
+          host: config.SMTP_HOST,
           secure : true,
-          port: 465,
+          port: config.SMTP_PORT,
           auth: {
-            user: "testerpraveen01@gmail.com",
-            pass: "Praveen@123"
+            user: config.SMTP_USER,
+            pass: config.SMTP_PASSWORD
           }, 
           tls: {
             rejectUnauthorized: false
@@ -216,7 +216,7 @@ router.get('/google/callback',
         });
         var mailOptions = {
         to: user.email,
-        from: 'testerpraveen01@gmail.com',
+        from: config.SMTP_FROM,
         subject: 'Node.js Password Reset',
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
         'Please click on the following link, or paste this into your browser to complete the process:\n\n' +

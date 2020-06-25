@@ -7,11 +7,13 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
+require('./models');
 require('./models/User');
 require('./models/Vendor');
 require('./models/Operator');
 require('./models/ShipmentMode');
 require('./models/Shipment');
+const config = require('./config');
 const User = mongoose.model('User')
 const passportJWT = require("passport-jwt");
 const JWTStrategy   = passportJWT.Strategy;
@@ -41,7 +43,7 @@ app.use(cors())
 
 // // Express Session
 app.use(session({
-  secret: 'secret',
+  secret: config.sessionSecret,
   saveUninitialized: true,
   resave: true
 }));

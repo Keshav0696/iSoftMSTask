@@ -24,7 +24,7 @@ router.get('/getUserById/:id', async function (req, res) {
   try {
     var userId = req.params.id
     let user = await User.findOne({_id: userId});
-    if (user && user.length) {
+    if (user) {
       res.status(200).send({ status: 200, data: user }).end()
     } else {
       res.status(500).send({ status: 500, data: null, message: "User not  found" }).end()
