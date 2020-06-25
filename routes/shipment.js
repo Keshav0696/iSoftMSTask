@@ -3,8 +3,8 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const multer = require("multer") ;
 const path = require("path") 
-var Shipment = mongoose.model('Shipment');
-
+const Shipment = mongoose.model('Shipment');
+const ShipDoc = mongoose.model('ShipDoc');
 var storage = multer.diskStorage({ 
     destination: function (req, file, cb) { 
   
@@ -63,13 +63,28 @@ router.get('/getAllShipment', async function (req, res) {
 
  });
  
- router.post('/uploadShipdoc',upload, (req,res)=>{
+ router.post('/uploadShipdoc',upload, async (req,res)=>{
     if (!req.file) {
-        res.status(404).send({ message: 'no file recieved' });
+        res.status(500).send({status :500, data: null,  message: 'no file recieved' });
     } else {
+        if(req.body){
+        req.body.doc_path = req.file.path;
+        let toSave = new ShipDoc(req.body);
+        let saved = await toSave.save();
+        if(saved){
+            res.status(200).send({status : 200, data : saved, message : "File Upload Succesfull"})
+        }else{
+            res.status(500).send({status :500, data: null,  message: 'Problem with Saving Upload Data' });
+        }
+        }else{
+        res.status(500).send({status :500, data: null,  message: 'file data not received' });
+        }  
     }
-
  });
 
+
+
+
+ 
 
 module.exports = router;

@@ -15,7 +15,14 @@ var ShipmentModeSchema = mongoose.Schema({
   detTime  : Number,
   detCostPerHour : Number,
   noOfTruck : Number,
-
+  create_at: {
+    type : Date,
+    default : Date.now
+  },
+  updated_at: {
+     type : Date,
+     default : Date.now
+   }
 });
 
 var ShipmentMode = module.exports = mongoose.model('ShipmentMode', ShipmentModeSchema);

@@ -14,6 +14,14 @@ var OperatorSchema = mongoose.Schema({
   status  : {
     type : String,
     enum : ["active", "deactive"],
+   },
+   create_at: {
+    type : Date,
+    default : Date.now
+  },
+  updated_at: {
+     type : Date,
+     default : Date.now
    }
 });
 

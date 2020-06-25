@@ -7,7 +7,15 @@ var ShipDocSchema = mongoose.Schema({
      ref : "Shipment"
  },
  doc_name : String,
- doc_path : String
+ doc_path : String,
+ create_at: {
+   type : Date,
+   default : Date.now
+ },
+ updated_at: {
+    type : Date,
+    default : Date.now
+  }
 });
 
 var ShipDoc = module.exports = mongoose.model('ShipDoc', ShipDocSchema);

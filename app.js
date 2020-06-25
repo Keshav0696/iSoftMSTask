@@ -13,6 +13,7 @@ require('./models/Vendor');
 require('./models/Operator');
 require('./models/ShipmentMode');
 require('./models/Shipment');
+require('./models/ShipDoc');
 const config = require('./config');
 const User = mongoose.model('User')
 const passportJWT = require("passport-jwt");

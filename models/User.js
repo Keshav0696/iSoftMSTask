@@ -26,7 +26,15 @@ var UserSchema = mongoose.Schema({
    default : "active"
   },
   token: String,
-  type : String
+  type : String,
+  create_at: {
+    type : Date,
+    default : Date.now
+  },
+  updated_at: {
+     type : Date,
+     default : Date.now
+   }
 
 });
 
