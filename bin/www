@@ -17,7 +17,7 @@ var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 
-const connString = "mongodb://localhost:27017/testLogin";
+const connString = "mongodb://localhost:27017/fbadelivery";
 mongoose.connect(connString, function(err){
     if(!err){
         console.log("Mongoose connected");
