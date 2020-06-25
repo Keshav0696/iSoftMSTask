@@ -7,7 +7,6 @@
 var app = require('../app');
 var debug = require('debug')('express-generator:server');
 var http = require('http');
-var mongoose = require('mongoose');
 
 /**
  * Get port from environment and store in Express.
@@ -16,13 +15,12 @@ var mongoose = require('mongoose');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-
-const connString = "mongodb://localhost:27017/fbadelivery";
-mongoose.connect(connString, function(err){
-    if(!err){
-        console.log("Mongoose connected");
-    }
-})
+// const connString = "mongodb://localhost:27017/testLogin";
+// mongoose.connect(connString, function(err){
+//     if(!err){
+//         console.log("Mongoose connected");
+//     }
+// })
 
 /**
  * Create HTTP server.
