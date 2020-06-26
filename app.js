@@ -92,12 +92,12 @@ app.get('/auth/google/callback', function(req, res){
   res.send("Success")
 })
 app.use('/', indexRouter);
-app.use('/user', jwt, usersRouter);
-app.use('/auth', authRouter);
-app.use('/vendor',jwt, vendorRouter);
-app.use('/operator',jwt, operatorRouter);
-app.use('/shipmode',jwt, shipmentModeRouter);
-app.use('/shipment',jwt, shipmentRouter);
+app.use('/api/user', jwt, usersRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/vendor',jwt, vendorRouter);
+app.use('/api/operator',jwt, operatorRouter);
+app.use('/api/shipmode',jwt, shipmentModeRouter);
+app.use('/api/shipment',jwt, shipmentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
