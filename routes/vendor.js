@@ -31,6 +31,23 @@ router.post('/addVendor', async function (req, res) {
    } 
 });
 
+router.get('/getAllVendor', async function (req, res) {
+  try{
+  if(req.user.role!='ADMIN'){
+    res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+  }
+  let found = await Vendor.find({});
+   if(found && found.length){
+      res.status(200).json(found);
+   }else{
+       res.status(500).json({ status: 500, data: null, message: "No data exist" });
+   }
+  }
+  catch(e){
+    console.log(e)
+  }
+});
+
 router.post('/editVendor', async function (req, res) {
     let body  = req.body;
     if(body  && body.data && body.vendorId ){
