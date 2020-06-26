@@ -21,23 +21,20 @@ var ShipmentSchema = mongoose.Schema({
   },
   deliveryInfo:{
     business_name: String,
-    commodity : String,
     address : String,
     contact_name : String,
     contact_no : String,
     contact_email: String,
     scheduled_date: {
-      type : Date
+      type : Date,
+      default : Date.now
     },
     estimated_date : {
-      type : Date
+      type : Date,
+      default : Date.now
     }
   },
   shipmentNO : String,
-  deliveryInfo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Business'
-  },
   modeType : {
       type : mongoose.Schema.Types.ObjectId,
       ref:'ShipmentMode'

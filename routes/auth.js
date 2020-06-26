@@ -40,7 +40,7 @@ router.post('/register', async function(req, res){
       });
     }
     else{
-      res.status(500).send({status: 500, data: null, message: "User already exist"}).end()
+      res.status(500).send({status: 500, data: null, message: "User already exist with this email"}).end()
     }
 
   });
@@ -53,7 +53,7 @@ router.post('/login', function (req, res, next) {
       if (err || !user) {
           return res.status(400).json({
               status : 400,
-              message: 'Something is not right',
+              message: 'Invalid Email or Password',
               user   : user
           });
       }
@@ -268,7 +268,7 @@ router.post('/new-password', async function (req, res) {
           if (!userEmail) {
             return res
               .status(409)
-              .json({ message: 'User does not exist' });
+              .json({ message: 'User does not exist with this email' });
           }
           return bcrypt.hash(req.body.newPassword, 10, async (err, hash) => {
             if (err) {

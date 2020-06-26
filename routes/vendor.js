@@ -11,7 +11,10 @@ router.post('/addVendor', async function (req, res) {
 
    let body = req.body;
    let found = await Vendor.findOne({ email : body.email})
-   if(body && req.user.role=='ADMIN'){
+   if(body ){
+    if(req.user.role!='ADMIN'){
+      res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+    }
     if(!found){
         let toSave = new Vendor(body);
         let saved  = await toSave.save()
@@ -24,13 +27,16 @@ router.post('/addVendor', async function (req, res) {
         res.status(500).json({ status: 500, data: null, message: "Vendor already Exist" });
     }
    }else{
-    res.status(500).json({ status: 500, data: null, message: "Data not validated" });
+    res.status(500).json({ status: 500, data: null, message: "Please send data" });
    } 
 });
 
 router.post('/editVendor', async function (req, res) {
     let body  = req.body;
-    if(body  && body.data && body.vendorId && req.user == 'ADMIN'){
+    if(body  && body.data && body.vendorId ){
+      if(req.user.role!='ADMIN'){
+        res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+      }
    let edited = await Vendor.findByIdAndUpdate(body.vendorId, {
        $set: body.data
    },
@@ -44,7 +50,7 @@ router.post('/editVendor', async function (req, res) {
     res.status(500).json({status: 500, data: null, message: 'Problem with Update' });
  }
     }else{
-        res.status(500).json({status: 500, data: null, message: 'Please send valid data' });
+        res.status(500).json({status: 500, data: null, message: 'Please send vendor Id' });
     }
 });
 

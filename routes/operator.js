@@ -23,13 +23,16 @@ router.post('/addOperator', async function (req, res) {
         res.status(500).json({ status : 500, message: 'Operator already Exist' });
     }
    }else{
-    res.status(500).json({status : 500, message : "Data not validated"});
+    res.status(500).json({status : 500, message : "Role do not have access"});
    } 
 });
 
 router.post('/editOperator', async function (req, res) {
     let body  = req.body;
-    if(body && body.data && body.operatorId && req.user.role=='ADMIN'){
+    if(body && body.data && body.operatorId){
+      if(req.user.role!='ADMIN'){
+        res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+      }
     let edited = await  Operator.findByIdAndUpdate(body.operatorId, {
        $set: body.data
    },
@@ -42,7 +45,7 @@ router.post('/editOperator', async function (req, res) {
    res.status(500).json({status : 500, message: 'Problem with Update' });
 }
     }else{
-        res.status(500).json({status : 500, message: 'Please send valid data' });
+        res.status(500).json({status : 500, message: "Please Send Operator Id" });
     }
 });
 
@@ -64,7 +67,11 @@ router.post('/activeDeactivate', async function (req, res) {
   })
 
 router.get('/deleteOperator/:id', async function (req, res) {
-    if (req.params.id && req.user.role=='ADMIN') {
+    if (req.params.id ) {
+      if(req.user.role!='ADMIN'){
+        res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+      }
+
       var operatorId = req.params.id;
       var removed = await Operator.remove({ _id: operatorId });
       if (removed.deletedCount) {

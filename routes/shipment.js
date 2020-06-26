@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const multer = require("multer") ;
 const path = require("path") 
 const Shipment = mongoose.model('Shipment');
@@ -62,6 +63,42 @@ router.get('/getAllShipment', async function (req, res) {
      }
 
  });
+
+
+ router.get('/getShipmentById/:id', async function (req, res) {
+    try {
+      var shipmentId = req.params.id
+      let shipment = await Shipment.aggregate([
+          {"$match" : { "_id" : ObjectId(shipmentId)}},
+          {$lookup: {
+            from:"shipmentmodes",
+            localField: "modeType",
+            foreignField: "_id",
+            as: "modeData"
+           }},
+           {$lookup: {
+            from:"vendors",
+            localField: "vendor_id",
+            foreignField: "_id",
+            as: "vendorData"
+           }},
+           {$lookup: {
+            from:"shipdocs",
+            localField: "_id",
+            foreignField: "shipment_id",
+            as: "docData"
+           }},
+      ]);
+      if (shipment && shipment.length) {
+        res.status(200).send({ status: 200, data: shipment }).end()
+      } else {
+        res.status(500).send({ status: 500, data: null, message: "Shipment not  found" }).end()
+      }
+    }
+    catch (e) {
+      console.log("exception with GetUserById: ", e)
+    }
+  });
  
  router.post('/uploadShipdoc',upload, async (req,res)=>{
     if (!req.file) {
