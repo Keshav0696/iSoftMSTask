@@ -10,6 +10,7 @@ var Vendor = mongoose.model('Vendor');
 router.post('/addVendor', async function (req, res) {
 
    let body = req.body;
+   body.status = body.status || 'active';
    let found = await Vendor.findOne({ email : body.email})
    if(body ){
     if(req.user.role!='ADMIN'){

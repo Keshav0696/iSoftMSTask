@@ -9,6 +9,7 @@ var Operator = mongoose.model('Operator');
 router.post('/addOperator', async function (req, res) {
 
    let body = req.body;
+   body.status = body.status || 'active';
    let found = await Operator.findOne({email : body.email})
    if(body && req.user.role=='ADMIN'){
     if(!found){

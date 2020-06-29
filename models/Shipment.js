@@ -4,6 +4,8 @@ var mongoose = require('mongoose');
 var ShipmentSchema = mongoose.Schema({
   shipper_reference : String,
   commodity : String,
+  price : Number,
+  carrier_name : String,
   pickupInfo:{
     business_name: String,
     address : String,
@@ -50,6 +52,10 @@ var ShipmentSchema = mongoose.Schema({
   paymentStatus : {
     type: String,
     enum: ["PAID","UNPAID"]
+  },
+  paymentDueDate : {
+    type: Date,
+    default : Date.now
   },
   create_at: {
     type : Date,

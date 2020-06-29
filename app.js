@@ -91,7 +91,7 @@ app.get('/auth/facebook/callback', function(req, res){
 app.get('/auth/google/callback', function(req, res){
   res.send("Success")
 })
-app.use('/', indexRouter);
+app.use('/api', indexRouter);
 app.use('/api/user', jwt, usersRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/vendor',jwt, vendorRouter);
