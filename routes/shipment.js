@@ -114,19 +114,26 @@ router.get('/getAllShipment', async function (req, res) {
         res.status(500).send({status :500, data: null,  message: 'no file recieved' });
     } else {
         if(req.body){
-        req.body.doc_path = req.file.path;
+
+            res.status(200).send({status : 200, data : req.file.path, message : "File Upload Succesfull"})
+     }
+   }
+ });
+  router.post('/saveShipdoc', async (req,res)=>{
+
+        if(req.body){
         let toSave = new ShipDoc(req.body);
         let saved = await toSave.save();
         if(saved){
-            res.status(200).send({status : 200, data : saved, message : "File Upload Succesfull"})
+            res.status(200).send({status : 200, data : saved, message : "Save Doc Detail Succesfull"})
         }else{
             res.status(500).send({status :500, data: null,  message: 'Problem with Saving Upload Data' });
         }
         }else{
-        res.status(500).send({status :500, data: null,  message: 'file data not received' });
-        }  
-    }
- });
+          res.status(500).send({status :500, data: null,  message: 'Please send data to save' });
+        
+        }
+    });
 
 
 
