@@ -2,9 +2,11 @@ var mongoose = require('mongoose');
 
 // Vendor Schema
 var VendorSchema = mongoose.Schema({
-  name: {
-    type: String,
-    index:true
+  firstName: {
+    type: String
+  },
+  lastName : {
+    type : String
   },
   description:{
       type:String,
