@@ -1,0 +1,5 @@
+arr = [23, "fdfdff", 48788]
+arr.push(4,5)
+arr.each do |i|
+  puts i
+  end 
