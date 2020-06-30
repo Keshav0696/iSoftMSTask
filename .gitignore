@@ -2,3 +2,4 @@ node_modules
 sslkeys
 package-lock.json
 bin/www
+uploads
