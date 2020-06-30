@@ -5,7 +5,6 @@ var ShipmentSchema = mongoose.Schema({
   shipper_reference : String,
   commodity : String,
   price : Number,
-  carrier_name : String,
   pickupInfo:{
     business_name: String,
     address : String,

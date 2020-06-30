@@ -44,7 +44,7 @@ var upload = multer({
 
 router.post('/addShipment', async function (req, res) {
     let body = req.body;
-    body.shipmentNO = Math.floor(100000 + Math.random() * 900000);
+    body.shipmentNO = makeid(4).toUpperCase() + Math.floor(100000 + Math.random() * 900000);
     let toSave = new Shipment(body);
     let saved  = await toSave.save();
     if(saved){
@@ -53,6 +53,15 @@ router.post('/addShipment', async function (req, res) {
     res.status(500).json({ status: 500, data: null, message: "Error with saving Shipment" });
     }
  });
+function makeid(length) {
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
 
 router.get('/getAllShipment', async function (req, res) {
     let found = await Shipment.find({}).populate('vendor_id modeType');
