@@ -9,8 +9,6 @@ var session = require('express-session');
 var passport = require('passport');
 require('./models');
 require('./models/User');
-require('./models/Vendor');
-require('./models/Operator');
 require('./models/ShipmentMode');
 require('./models/Shipment');
 require('./models/ShipDoc');

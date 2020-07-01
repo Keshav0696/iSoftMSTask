@@ -3,17 +3,17 @@ var router = express.Router();
 var passport = require('passport');
 const mongoose = require('mongoose');
 
-var Operator = mongoose.model('Operator');
-
+var User = mongoose.model('User');
 
 router.post('/addOperator', async function (req, res) {
 
    let body = req.body;
    body.status = body.status || 'active';
-   let found = await Operator.findOne({email : body.email})
+   body.role = body.role || 'OPERATOR';
+   let found = await User.findOne({email : body.email})
    if(body && req.user.role=='ADMIN'){
     if(!found){
-        let toSave = new Operator(body);
+        let toSave = new User(body);
         let saved  = await toSave.save()
         if(saved){
             res.status(200).json(saved);
@@ -34,7 +34,7 @@ router.post('/editOperator', async function (req, res) {
       if(req.user.role!='ADMIN'){
         res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
       }
-    let edited = await  Operator.findByIdAndUpdate(body.operatorId, {
+    let edited = await  User.findByIdAndUpdate(body.operatorId, {
        $set: body.data
    },
    {
@@ -53,7 +53,7 @@ router.post('/editOperator', async function (req, res) {
 router.post('/activeDeactivate', async function (req, res) {
     if (req.body.operatorId) {
       let operatorId = req.body.operatorId;
-      var edited = await Operator.findByIdAndUpdate(operatorId, {
+      var edited = await User.findByIdAndUpdate(operatorId, {
         $set: {status : req.body.status}
       },
         {
@@ -74,7 +74,7 @@ router.get('/deleteOperator/:id', async function (req, res) {
       }
 
       var operatorId = req.params.id;
-      var removed = await Operator.remove({ _id: operatorId });
+      var removed = await User.remove({ _id: operatorId });
       if (removed.deletedCount) {
         res.send(removed);
       } else {

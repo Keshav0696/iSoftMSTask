@@ -42,7 +42,11 @@ var ShipmentSchema = mongoose.Schema({
   },
   vendor_id: {
     type : mongoose.Schema.Types.ObjectId,
-    ref : "Vendor"
+    ref : "User"
+  },
+  user_id : {
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "User" 
   },
   status : {
       type : String,

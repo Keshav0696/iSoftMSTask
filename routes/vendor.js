@@ -3,7 +3,6 @@ var router = express.Router();
 var passport = require('passport');
 const mongoose = require('mongoose');
 
-var Vendor = mongoose.model('Vendor');
     User = mongoose.model('User');
 
 
@@ -11,13 +10,14 @@ router.post('/addVendor', async function (req, res) {
 
    let body = req.body;
    body.status = body.status || 'active';
-   let found = await Vendor.findOne({ email : body.email})
+   body.role = body.role || 'VENDOR';
+   let found = await User.findOne({ email : body.email})
    if(body ){
     if(req.user.role!='ADMIN'){
       res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
     }
     if(!found){
-        let toSave = new Vendor(body);
+        let toSave = new User(body);
         let saved  = await toSave.save()
         if(saved){
             res.status(200).json(saved);
@@ -37,7 +37,7 @@ router.get('/getAllVendor', async function (req, res) {
   if(req.user.role!='ADMIN'){
     res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
   }
-  let found = await Vendor.find({});
+  let found = await User.find({role : "VENDOR"});
    if(found && found.length){
       res.status(200).json(found);
    }else{
@@ -55,7 +55,7 @@ router.post('/editVendor', async function (req, res) {
       if(req.user.role!='ADMIN'){
         res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
       }
-   let edited = await Vendor.findByIdAndUpdate(body.vendorId, {
+   let edited = await User.findByIdAndUpdate(body.vendorId, {
        $set: body.data
    },
    {
@@ -76,7 +76,7 @@ router.get('/deleteVendor/:id', async function (req, res) {
     if (req.params.id) {
       var vendorId = req.params.id;
       if(req.user.role== 'ADMIN'){
-      var removed = await Vendor.remove({ _id: vendorId });
+      var removed = await User.remove({ _id: vendorId });
       }else{
         res.status(500).send("{errors: \"User Role Not Valid\"}").end()
       }
@@ -94,7 +94,7 @@ router.get('/deleteVendor/:id', async function (req, res) {
   router.post('/activeDeactivate', async function (req, res) {
     if (req.body.vendorId) {
       let vendorId = req.body.vendorId;
-      var edited = await Vendor.findByIdAndUpdate(vendorId, {
+      var edited = await User.findByIdAndUpdate(vendorId, {
         $set: {status : req.body.status}
       },
         {
