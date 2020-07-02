@@ -10,7 +10,7 @@ router.get('/', function (req, res, next) {
 
 
 router.get('/getAllUsers', async function (req, res) {
-  let users = await User.find({})
+  let users = await User.find({role : "MEMBER"})
 
   if (users && users.length) {
     res.status(200).send({ status: 200, data: users }).end()
@@ -39,6 +39,7 @@ router.get('/getUserById/:id', async function (req, res) {
 router.post('/createUser', async function(req, res){
     req.body.type = 'local';
     req.body.status = 'active';
+    req.body.role = req.body.role || "MEMBER"; 
     var newUser = new User(req.body);
     var found = await User.findOne({ email: req.body.email})
   if(!found){

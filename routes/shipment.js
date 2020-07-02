@@ -3,7 +3,8 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const multer = require("multer") ;
-const path = require("path") 
+const path = require("path"); 
+const { remove } = require('../models/User');
 const Shipment = mongoose.model('Shipment');
 const ShipDoc = mongoose.model('ShipDoc');
 var storage = multer.diskStorage({ 
@@ -86,7 +87,7 @@ router.get('/getAllShipment', async function (req, res) {
             as: "modeData"
            }},
            {$lookup: {
-            from:"vendors",
+            from:"users",
             localField: "vendor_id",
             foreignField: "_id",
             as: "vendorData"
@@ -119,6 +120,31 @@ router.get('/getAllShipment', async function (req, res) {
      }
    }
  });
+
+  
+ router.get('/removeAllShipment',  async (req,res)=>{
+  let removed  = await Shipment.remove({});
+  if(removed){
+    res.send(removed);  }
+});
+ router.post('/editShipment', async (req,res)=>{
+   let body = req.body;
+   if(body && body.shipmentId){
+    let updated =  await Shipment.findByIdAndUpdate(body.shipmentId,{
+       $set:body.data
+     },{
+       new : true
+     });
+     if(updated){
+      res.status(404).send({status:404, data : updated});
+     }else{
+      res.status(404).send({status:404, message: "Problem with Update"});
+
+     }
+   }else{
+     res.status(404).send({status:404, message: "Please send ShipmentDetail"})
+   }
+});
   router.post('/saveShipdoc', async (req,res)=>{
 
         if(req.body){
