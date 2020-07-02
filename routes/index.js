@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const User = mongoose.model("User");
-const Vendor = mongoose.model("Vendor");
 const Shipment = mongoose.model("Shipment");
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -11,7 +10,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/dashboard', async function(req, res) {
   let shipment_count =	await Shipment.count();
-  let active_vendor = await Vendor.find({status : 'active'}, {status:1}).count();
+  let active_vendor = await User.find({status : 'active', role : "VENDOR"}, {status:1}).count();
   let customer_count = await User.find({role : "MEMBER"}, {email : 1}).count();
   var date = new Date();
   var firstDay = new Date(date.getFullYear(), 0, 1);
