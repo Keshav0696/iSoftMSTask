@@ -101,10 +101,10 @@ res.send(null)
 passport.use(new FacebookStrategy({
     clientID: "188022502647729",
     clientSecret: "33a4a4b7898c5d86eca6f3335cbbebd1",
-    callbackURL: "http://localhost:3200/auth/facebook/callback"
+    callbackURL: "http://localhost:3200/api/auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, done) {
-    User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
+    User.findOne({ 'facebookId' : profile.id }, function(err, user) {
       if (err) return done(err);
       if (user) return done(null, user);
       else {
@@ -114,10 +114,13 @@ passport.use(new FacebookStrategy({
         // set all of the facebook information in our user model
         newUser.facebookId = profile.id;
         newUser.token = accessToken;
-        newUser.fullname  = profile.displayName;
+        newUser.role = "MEMBER";
+        newUser.firstname  = profile.displayName.split(' ').slice(0, -1).join(' ');
+        newUser.lastname  = profile.displayName.split(' ').slice(-1).join(' ');
+
         newUser.type  = 'facebook';
         if (typeof profile.emails != 'undefined' && profile.emails.length > 0)
-          newUser.facebook.email = profile.emails[0].value;
+          newUser.email = profile.emails[0].value;
   
         // save our user to the database
         newUser.save(function(err) {
@@ -132,7 +135,7 @@ passport.use(new FacebookStrategy({
   passport.use(new GoogleStrategy({
     clientID: "930205980963-dhp4ejdi8kfmer9ttt9h534flfu1efv1.apps.googleusercontent.com",
     clientSecret: "awKNylRbknwg-U5qZcUlmH_u",
-    callbackURL: "http://localhost:3200/auth/google/callback"
+    callbackURL: "https://28b8ffd1a6d7.ngrok.io/api/auth/google/callback"
   },
   function(token, tokenSecret, profile, done) {
       User.findOrCreate({ googleId: profile.id }, function (err, user) {
@@ -143,13 +146,19 @@ passport.use(new FacebookStrategy({
 
 
 
-// router.get(
-//   "/auth/facebook/callback",
-//   passport.authenticate("facebook", {
-//     successRedirect: "/",
-//     failureRedirect: "/fail"
-//   })
-// );
+
+router.get('/facebook/callback',
+    passport.authenticate('facebook', { failureRedirect: 'http://localhost:4200/login' }),
+function(req, res) {
+    var responseHTML = '<html><head><title>Main</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+    responseHTML = responseHTML.replace('%value%', JSON.stringify({
+        user: req.user
+    }));
+    res.status(200).send(responseHTML);
+
+
+});
+
 
 // router.get("/fail", (req, res) => {
 //   res.send("Failed attempt");
@@ -158,27 +167,33 @@ passport.use(new FacebookStrategy({
 // router.get("/", (req, res) => {
 //   res.send("Success");
 // });
+
 router.get('/facebook',
   passport.authenticate('facebook'));
 
-  router.get('/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    console.log(req.user)
-    res.redirect('/');
-  }
-);
+//   router.get('/facebook/callback',
+//   passport.authenticate('facebook', { failureRedirect: '/login' }),
+//   function(req, res) {
+//     // Successful authentication, redirect home.
+//     console.log(req.user)
+//     res.redirect('/');
+//   }
+// );
 
 router.get('/google',
 passport.authenticate('google', { scope: 'https://www.google.com/m8/feeds' }));
 
-router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/');
-  });
+router.get('/google/callback',
+    passport.authenticate('google', { failureRedirect: 'http://localhost:4200/login' }),
+function(req, res) {
+    var responseHTML = '<html><head><title>Main</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+    responseHTML = responseHTML.replace('%value%', JSON.stringify({
+        user: req.user
+    }));
+    res.status(200).send(responseHTML);
 
+
+});
 
 
 

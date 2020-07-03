@@ -66,6 +66,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/',  function(req, res){
+res.send("SUCCESS")
+}
+);
+app.get('/api/auth/google/callback', function(req, res){
+  res.send("Success")
+})
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
@@ -83,12 +90,8 @@ function jwt (req, res, next){
       next();
   })(req, res, next);
 }
-app.get('/auth/facebook/callback', function(req, res){
-  res.send("Success")
-})
-app.get('/auth/google/callback', function(req, res){
-  res.send("Success")
-})
+
+
 app.use('/api', indexRouter);
 app.use('/api/user', jwt, usersRouter);
 app.use('/api/auth', authRouter);
