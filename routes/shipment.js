@@ -136,7 +136,7 @@ router.get('/getAllShipment', async function (req, res) {
        new : true
      });
      if(updated){
-      res.status(404).send({status:404, data : updated});
+      res.status(200).send({status:404, data : updated});
      }else{
       res.status(404).send({status:404, message: "Problem with Update"});
 
