@@ -236,7 +236,6 @@ function(req, res) {
         'If you did not request this, please ignore this email and your password will remain unchanged.\n'
         }
         transporter.sendMail(mailOptions, (err, info) => {
-            console.log(err, info);
             if(!err){
                 console.log("Email sent")
             }
