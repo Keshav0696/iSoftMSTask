@@ -70,7 +70,7 @@ router.get('/getAllVendor', async function (req, res) {
 
 router.post('/editVendor', async function (req, res) {
     let body  = req.body;
-   if(emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
+   if(emailValidator(body.data.email) && phoneNoValidator(body.data.phoneNo)){
 
     if(body  && body.data && body.vendorId ){
       if(req.user.role!='ADMIN'){
