@@ -5,19 +5,30 @@ var bcrypt = require('bcryptjs');
 var UserSchema = mongoose.Schema({
   firstname: {
     type: String,
+    required : true
   },
-  lastname: String,
+  lastname:{
+    type : String,
+    required : true
+  },
   role : {
     type : String,
     enum : ["MEMBER", "ADMIN", "VENDOR", "OPERATOR"]
   },
-  address : String,
-  phoneNo : String,
+  address : {
+    type : String,
+    required : true
+  },
+  phoneNo : {
+    type : String,
+    required : true
+  },
   password: {
     type: String
   },
   email: {
-    type: String
+    type: String,
+    required : true
   },
   facebookId : String,
   status  : {
