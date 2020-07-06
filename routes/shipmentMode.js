@@ -29,15 +29,12 @@ router.post('/addShipmentMode', async function (req, res) {
 router.get('/getAllShipmentMode', async function (req, res) {
 
     let found = await ShipmentMode.find({})
-    if(req.user && req.user.role == 'ADMIN'){
      if(found){
         res.status(200).json(found);
      }else{
          res.status(500).json({ status: 500, data: null, message: "No data exist" });
      }
-    }else{
-     res.status(500).json({ status: 500, data: null, message: "Role not have access" });
-    } 
+
  });
  
 
