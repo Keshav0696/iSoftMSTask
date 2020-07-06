@@ -201,7 +201,7 @@ router.get('/google/callback',
         if (err) { return res.status(500).send({ msg: err.message }); }
         passwordResetToken.find({ _userId: user._id, resettoken: { $ne: resettoken.resettoken } }).remove().exec();
         res.status(200).json({ status : 200, message: 'Reset Password successfully.' });
-        let testAccount = await nodemailer.createTestAccount();
+        // let testAccount = await nodemailer.createTestAccount();
         var transporter = nodemailer.createTransport({
           host: config.SMTP_HOST,
           secure : true,
@@ -209,21 +209,19 @@ router.get('/google/callback',
           auth: {
             user: config.SMTP_USER,
             pass: config.SMTP_PASSWORD
-          }, 
-          tls: {
-            rejectUnauthorized: false
           }
         });
         var mailOptions = {
         to: user.email,
         from: config.SMTP_FROM,
-        subject: 'Node.js Password Reset',
+        subject: 'Reset Password Request',
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
         'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-        'http://localhost:4200/resetPassword/' + resettoken.resettoken + '\n\n' +
+        'https://fba.udaantechnologies.com/resetPassword/' + resettoken.resettoken + '\n\n' +
         'If you did not request this, please ignore this email and your password will remain unchanged.\n'
         }
         transporter.sendMail(mailOptions, (err, info) => {
+            console.log(err, info);
             if(!err){
                 console.log("Email sent")
             }
