@@ -35,28 +35,50 @@ router.get('/getUserById/:id', async function (req, res) {
   }
 });
 
-
+function emailValidator(value){
+  let pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  let emailVal = pattern.test(value);
+  return emailVal;
+}
+function phoneNoValidator(value){
+  let phonePattern =/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+  let phoneNOVal = phonePattern.test(value);
+  return phoneNOVal;
+}
 router.post('/createUser', async function(req, res){
+
     req.body.type = 'local';
     req.body.status = 'active';
     req.body.role = req.body.role || "MEMBER"; 
+    if(emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
     var newUser = new User(req.body);
     var found = await User.findOne({ email: req.body.email})
   if(!found){
+    
     User.createUser(newUser, function(err, user){
-      if(err) throw err;
+      try{
+      if(err) throw new Error(err);
       res.status(200).send({status: 200, data: newUser}).end()
+    }
+    catch(e){
+      console.log(e)
+    }
     });
+
   }
   else{
     res.status(500).send({status: 500, data: null, message: "User already exist"}).end()
   }
+}else{
+  res.status(500).send({status: 500, data: null, message: "User data not Validated"}).end()
+}
 
 });
 router.post('/editUser', async function (req, res) {
   if (req.body.data && req.body._id) {
     let userId = req.body._id;
     let UserSet = req.body.data;
+    if(emailValidator(req.body.data.email) && phoneNoValidator(req.body.data.phoneNo)){
     var edited = await User.findByIdAndUpdate(userId, {
       $set: UserSet
     },
@@ -68,6 +90,9 @@ router.post('/editUser', async function (req, res) {
     } else {
       res.status(500).send({status: 500, data: null, message: "User not  found"}).end()
     }
+  }else{
+    res.status(500).send({status: 500, data: null, message: "User not validated"}).end()
+  }
   }
 })
 router.post('/activeDeactivate', async function (req, res) {

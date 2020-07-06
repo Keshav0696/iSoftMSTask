@@ -6,17 +6,30 @@ const mongoose = require('mongoose');
     User = mongoose.model('User');
 
 
+    function emailValidator(value){
+      let pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      let emailVal = pattern.test(value);
+      return emailVal;
+    }
+    function phoneNoValidator(value){
+      let phonePattern =/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+      let phoneNOVal = phonePattern.test(value);
+      return phoneNOVal;
+    }
+
 router.post('/addVendor', async function (req, res) {
 
    let body = req.body;
    body.status = body.status || 'active';
    body.role = body.role || 'VENDOR';
+   if(emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
    let found = await User.findOne({ email : body.email})
    if(body ){
     if(req.user.role!='ADMIN'){
       res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
     }
     if(!found){
+      try{
         let toSave = new User(body);
         let saved  = await toSave.save()
         if(saved){
@@ -24,12 +37,18 @@ router.post('/addVendor', async function (req, res) {
         }else{
          res.status(500).json({ status: 500, data: null, message: "Error with saving Vendors" });
         }
+      }catch(e){
+        console.log(e);
+      }
     }else{
         res.status(500).json({ status: 500, data: null, message: "Vendor already Exist" });
     }
    }else{
     res.status(500).json({ status: 500, data: null, message: "Please send data" });
    } 
+  }else{
+    res.status(500).json({ status: 500, data: null, message: "Vendor Data Not Validated" }); 
+  }
 });
 
 router.get('/getAllVendor', async function (req, res) {
@@ -51,6 +70,8 @@ router.get('/getAllVendor', async function (req, res) {
 
 router.post('/editVendor', async function (req, res) {
     let body  = req.body;
+   if(emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
+
     if(body  && body.data && body.vendorId ){
       if(req.user.role!='ADMIN'){
         res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
@@ -70,6 +91,11 @@ router.post('/editVendor', async function (req, res) {
     }else{
         res.status(500).json({status: 500, data: null, message: 'Please send vendor Id' });
     }
+  }
+  else{
+    res.status(500).json({status: 500, data: null, message: 'Vendor Data not Validated' });
+
+  }
 });
 
 router.get('/deleteVendor/:id', async function (req, res) {
