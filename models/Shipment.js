@@ -7,6 +7,7 @@ var ShipmentSchema = mongoose.Schema({
   declared_value : String,
   pickup_no : String,
   total_weight : String,
+  comments : String,
   service_level : String,
   price : Number,
   pickupInfo:{
