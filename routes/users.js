@@ -50,7 +50,7 @@ router.post('/createUser', async function(req, res){
     req.body.type = 'local';
     req.body.status = 'active';
     req.body.role = req.body.role || "MEMBER"; 
-    if(emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
+    if(req.body.email && req.body.phoneNo && emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
     var newUser = new User(req.body);
     var found = await User.findOne({ email: req.body.email})
   if(!found){

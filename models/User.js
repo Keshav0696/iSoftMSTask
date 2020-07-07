@@ -17,18 +17,15 @@ var UserSchema = mongoose.Schema({
   },
   address : {
     type : String,
-    required : true
   },
   phoneNo : {
     type : String,
-    required : true
   },
   password: {
     type: String
   },
   email: {
     type: String,
-    required : true
   },
   facebookId : String,
   status  : {
