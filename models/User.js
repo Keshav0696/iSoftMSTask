@@ -71,13 +71,10 @@ module.exports.getUserByUsername = function(username, callback){
     User.findById(id, callback);
   }
   
-  module.exports.comparePassword = function(candidatePassword, callback){
-    bcrypt.hash(candidatePassword, 10, function(err, hash) {
-      if (err) { throw (err); }
+  module.exports.comparePassword = function(candidatePassword, userPassoword, callback){
   
-      bcrypt.compare(candidatePassword, hash, function(err, result) {
+      bcrypt.compare(candidatePassword, userPassoword, function(err, result) {
           if (err) { throw (err); }
           callback(null, result);
       });
-  });
   }
