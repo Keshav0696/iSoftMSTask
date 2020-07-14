@@ -3,11 +3,22 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const User = mongoose.model("User");
 const Shipment = mongoose.model("Shipment");
+const Destination = mongoose.model("Destination");
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.get('/getAllDestination', async function(req, res){
+      let destinations =  await Destination.find({});
+      if(destinations.length){
+        res.send({status : 200, data : destinations});
+      }else{
+        res.send({status : 500, data : null, message : "No destinations Found"});
+
+      }
+})
 router.get('/dashboard', async function(req, res) {
   let shipment_count =	await Shipment.count();
   let active_vendor = await User.find({status : 'active', role : "VENDOR"}, {status:1}).count();
