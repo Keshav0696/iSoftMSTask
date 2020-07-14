@@ -12,6 +12,8 @@ require('./models/User');
 require('./models/ShipmentMode');
 require('./models/Shipment');
 require('./models/ShipDoc');
+require('./models/destination');
+
 const config = require('./config');
 const User = mongoose.model('User')
 const passportJWT = require("passport-jwt");
@@ -115,6 +117,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;
 
