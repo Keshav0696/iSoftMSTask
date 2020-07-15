@@ -13,6 +13,11 @@ require('./models/ShipmentMode');
 require('./models/Shipment');
 require('./models/ShipDoc');
 require('./models/destination');
+require('./models/companyDetail');
+require('./models/vendorBizInfo');
+require('./models/paymentInfo');
+require('./models/location');
+
 
 const config = require('./config');
 const User = mongoose.model('User')

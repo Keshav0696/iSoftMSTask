@@ -1,9 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
+const util = require(process.cwd() + '/util');
+const upload = util.upload;
 const mongoose = require('mongoose');
 
     User = mongoose.model('User');
+    BusinessInfo = mongoose.model('VendorBizInfo');
+    PaymentInfo = mongoose.model('PaymentInfo');
+    CompanyDetail = mongoose.model('CompanyDetail');
 
 
     function emailValidator(value){
@@ -131,6 +136,101 @@ router.get('/deleteVendor/:id', async function (req, res) {
       } else {
         res.status(500).send({status: 500, data: null, message: 'Vendor not  found' }).end()
       }
+    }
+  })
+
+  router.post('/saveBizInfo', async function(req, res){
+    let body = req.body;
+    if(body){
+      try{
+        let toSave =   new BusinessInfo(body);
+        let saved = await toSave.save();
+        if(saved){
+          res.send({status : 200, data : saved});
+        }else{
+          res.send({status : 500, data : null})
+        }
+      }
+      catch(e){
+        console.log(e)
+      }
+    }
+  })
+
+  router.get('/getBusinessInfo/:id', async function(req, res){
+    let id = req.params.id;
+    let found  =  await BusinessInfo.findOne({vendor_id : id});
+    if(found){
+      res.send({status : 200, data : found});
+    }else{
+      res.send({status : 500, data : null , message : "Info Not Found"});
+    }
+  })
+  router.post('/uploadBusinessLogo', upload, async (req, res) => {
+    if (!req.file) {
+      res.status(500).send({ status: 500, data: null, message: 'no file recieved' });
+    } else {
+      if (req.body) {
+  
+        res.status(200).send({ status: 200, data: req.file.path, message: "File Upload Succesfull" })
+      }
+    }
+  });
+
+
+  router.post('/savePaymentInfo', upload, async (req, res) => {
+    let body = req.body;
+    if(body){
+      try{
+        let toSave =  new PaymentInfo(body);
+        let saved = await toSave.save();
+        if(saved){
+          res.send({status : 200, data : saved});
+        }else{
+          res.send({status : 500, data : null})
+        }
+      }
+      catch(e){
+        console.log(e)
+      }
+    }
+  });
+
+  router.get('/getPaymentInfo/:id', async function(req, res){
+    let id = req.params.id;
+    let found  =  await PaymentInfo.findOne({vendor_id : id});
+    if(found){
+      res.send({status : 200, data : found});
+    }else{
+      res.send({status : 500, data : null , message : "Info Not Found"});
+    }
+  })
+
+  router.post('/saveCompanyDetails', async function(req, res){
+    let body = req.body;
+    if(body){
+      try{
+        let toSave =   new CompanyDetail(body);
+        let saved = await toSave.save();
+        if(saved){
+          res.send({status : 200, data : saved});
+        }else{
+          res.send({status : 500, data : null})
+        }
+      }
+      catch(e){
+        console.log(e)
+      }
+    }
+  })
+
+  router.get('/getAllCompanyDetails/:id', async function(req, res){
+    let id = req.params.id;
+    let found  =  await CompanyDetail.find({vendor_id : id});
+    if(found.length){
+      res.send({status : 200, data : found});
+    }else{
+      res.send({status : 500, data : null , message : "Details Not Found"});
     }
   })
 
