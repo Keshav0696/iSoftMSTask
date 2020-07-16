@@ -1,7 +1,7 @@
 {
     "appName": "FBADeliveryApp",
     "url": "http://localhost:3000/",
-    "dbURI": "mongodb://localhost:27017/fbadelivery",
+    "dbURI": "mongodb+srv://fbauser:hH0fprgygEy40Qc0@cluster0-s6x18.mongodb.net/fba?retryWrites=true&w=majority",
     "sessionSecret": "testappudaan",
     "SMTP_HOST": "smtp.gmail.com",
     "SMTP_PORT": 465,
