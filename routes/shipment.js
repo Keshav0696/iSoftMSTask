@@ -2,48 +2,15 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const multer = require("multer");
+const util = require(process.cwd() + '/util');
+const upload = util.upload;
 const path = require("path");
 const fs = require("fs")
 const { remove } = require('../models/User');
 const { fstat } = require('fs');
 const Shipment = mongoose.model('Shipment');
 const ShipDoc = mongoose.model('ShipDoc');
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
 
-    // Uploads is the Upload_folder_name 
-    cb(null, "uploads")
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now())
-  }
-})
-
-const maxSize = 1 * 1000 * 1000;
-
-var upload = multer({
-  storage: storage,
-  limits: { fileSize: maxSize },
-  fileFilter: function (req, file, cb) {
-
-    // Set the filetypes, it is optional 
-    var filetypes = /json/;
-    // var mimetype = filetypes.test(file.mimetype); 
-
-    var extname = filetypes.test(path.extname(
-      file.originalname).toLowerCase());
-
-    if (!extname) {
-      return cb(null, true);
-    }
-
-    cb("Error: File upload only supports the "
-      + "following filetypes - " + filetypes);
-  }
-
-  // mypic is the name of file attribute 
-}).single("myfile");
 
 router.post('/addShipment', async function (req, res) {
   let body = req.body;
