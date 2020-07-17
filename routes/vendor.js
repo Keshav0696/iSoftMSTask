@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
     BusinessInfo = mongoose.model('VendorBizInfo');
     PaymentInfo = mongoose.model('PaymentInfo');
     CompanyDetail = mongoose.model('CompanyDetail');
+    Location = mongoose.model('Location');
 
 
     function emailValidator(value){
@@ -227,6 +228,34 @@ router.get('/deleteVendor/:id', async function (req, res) {
   router.get('/getAllCompanyDetails/:id', async function(req, res){
     let id = req.params.id;
     let found  =  await CompanyDetail.find({vendor_id : id});
+    if(found.length){
+      res.send({status : 200, data : found});
+    }else{
+      res.send({status : 500, data : null , message : "Details Not Found"});
+    }
+  })
+
+  router.post('/addLocation', async function(req, res){
+    let body = req.body;
+    if(body){
+      try{
+        let toSave =   new Location(body);
+        let saved = await toSave.save();
+        if(saved){
+          res.send({status : 200, data : saved});
+        }else{
+          res.send({status : 500, data : null})
+        }
+      }
+      catch(e){
+        console.log(e)
+      }
+    }
+  })
+
+  router.get('/getAllLocations/:id', async function(req, res){
+    let id = req.params.id;
+    let found  =  await Location.find({vendor_id : id});
     if(found.length){
       res.send({status : 200, data : found});
     }else{
