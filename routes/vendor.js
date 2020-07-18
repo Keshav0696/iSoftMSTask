@@ -4,7 +4,6 @@ var passport = require('passport');
 const util = require(process.cwd() + '/util');
 const upload = util.upload;
 const mongoose = require('mongoose');
-
     User = mongoose.model('User');
     BusinessInfo = mongoose.model('VendorBizInfo');
     PaymentInfo = mongoose.model('PaymentInfo');
@@ -142,12 +141,17 @@ router.get('/deleteVendor/:id', async function (req, res) {
 
   router.post('/saveBizInfo', async function(req, res){
     let body = req.body;
-    if(body){
+    let found  =  await User.findOne({_id : body.vendor_id});
+    if(body && found){
       try{
-        let toSave =   new BusinessInfo(body);
-        let saved = await toSave.save();
-        if(saved){
-          res.send({status : 200, data : saved});
+        let updated =   await BusinessInfo.findByIdAndUpdate(body.vendor_id, {
+          $set : body.data
+        },
+        {
+             upsert : true
+        });
+        if(updated){
+          res.send({status : 200, data : updated});
         }else{
           res.send({status : 500, data : null})
         }
@@ -155,12 +159,14 @@ router.get('/deleteVendor/:id', async function (req, res) {
       catch(e){
         console.log(e)
       }
+    }else{
+      res.send({status : 500, data : null, message : "Vendor Not Found"})
     }
   })
 
   router.get('/getBusinessInfo/:id', async function(req, res){
     let id = req.params.id;
-    let found  =  await BusinessInfo.findOne({vendor_id : id});
+    let found  =  await BusinessInfo.findOne({_id : id});
     if(found){
       res.send({status : 200, data : found});
     }else{
@@ -181,12 +187,17 @@ router.get('/deleteVendor/:id', async function (req, res) {
 
   router.post('/savePaymentInfo', upload, async (req, res) => {
     let body = req.body;
-    if(body){
+    let found  =  await User.findOne({_id : body.vendor_id});
+    if(body && found){
       try{
-        let toSave =  new PaymentInfo(body);
-        let saved = await toSave.save();
-        if(saved){
-          res.send({status : 200, data : saved});
+        let updated =  await PaymentInfo.findByIdAndUpdate(body.vendor_id, {
+          $set : body.data
+        },
+        {
+             upsert : true
+        });
+        if(updated){
+          res.send({status : 200, data : updated});
         }else{
           res.send({status : 500, data : null})
         }
@@ -194,12 +205,14 @@ router.get('/deleteVendor/:id', async function (req, res) {
       catch(e){
         console.log(e)
       }
+    }else{
+      res.status(500).send({status: 500, data: null, message: 'Vendor not  found' }).end();
     }
   });
 
   router.get('/getPaymentInfo/:id', async function(req, res){
     let id = req.params.id;
-    let found  =  await PaymentInfo.findOne({vendor_id : id});
+    let found  =  await PaymentInfo.findOne({_id : id});
     if(found){
       res.send({status : 200, data : found});
     }else{
