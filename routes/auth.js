@@ -35,8 +35,13 @@ router.post('/register', async function(req, res){
       var found = await User.findOne({ email: req.body.email})
     if(!found){
       User.createUser(newUser, function(err, user){
+        try{
         if(err) throw err;
         res.status(200).send({status: 200, data: newUser}).end()
+        }
+        catch(e){
+          console.log(e);
+        }
       });
     }
     else{
