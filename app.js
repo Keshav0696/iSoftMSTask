@@ -17,6 +17,7 @@ require('./models/companyDetail');
 require('./models/vendorBizInfo');
 require('./models/paymentInfo');
 require('./models/location');
+require('./models/accessoriesRate');
 
 
 const config = require('./config');
@@ -87,6 +88,8 @@ var vendorRouter = require('./routes/vendor');
 var operatorRouter = require('./routes/operator');
 var shipmentModeRouter = require('./routes/shipmentMode');
 var shipmentRouter = require('./routes/shipment');
+var accessoriesRouter = require('./routes/accessoriesRate');
+
 function jwt (req, res, next){
   passport.authenticate('jwt', { session: false }, function(err, user, info) { 
       if (err) { return next(err); } 
@@ -106,6 +109,7 @@ app.use('/api/vendor',jwt, vendorRouter);
 app.use('/api/operator',jwt, operatorRouter);
 app.use('/api/shipmode',jwt, shipmentModeRouter);
 app.use('/api/shipment',jwt, shipmentRouter);
+app.use('/api/accessories',jwt, accessoriesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
