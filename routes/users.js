@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
+var bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 /* GET users listing. */
@@ -19,6 +20,39 @@ router.get('/getAllUsers', async function (req, res) {
   }
 });
 
+
+router.post('/updatePassword', async function (req, res) {
+  await  User.findOne({
+    email: req.body.email
+  }, async function (err, userEmail, next) {
+    if (!userEmail) {
+      return res
+        .status(409)
+        .json({ message: 'User does not exist with this email' });
+    }
+    return bcrypt.hash(req.body.password, 10, async (err, hash) => {
+      if (err) {
+        return res
+          .status(400)
+          .json({ message: 'Error hashing password' });
+      }
+      userEmail.password = hash;
+      await userEmail.save(function (err) {
+        if (err) {
+          return res
+            .status(400)
+            .json({ message: 'Password can not reset.' });
+        } else {
+          return res
+            .status(201)
+            .json({ message: 'Password reset successfully' });
+        }
+
+      });
+    });
+  });
+
+});
 
 router.get('/getUserById/:id', async function (req, res) {
   try {
