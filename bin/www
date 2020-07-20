@@ -6,16 +6,16 @@
 
 var app = require('../app');
 var debug = require('debug')('express-generator:server');
-var http = require('http');
-// var fs = require('fs');
-// var privateKey  = fs.readFileSync('sslkeys/privkey1.pem', 'utf8');
-// var certificate = fs.readFileSync('sslkeys/cert1.pem', 'utf8');
-// var credentials = {key: privateKey, cert: certificate};
+var http = require('https');
+var fs = require('fs');
+var privateKey  = fs.readFileSync('sslkeys/privkey1.pem', 'utf8');
+var certificate = fs.readFileSync('sslkeys/cert1.pem', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3200');
+var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 // const connString = "mongodb://localhost:27017/testLogin";
@@ -29,7 +29,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = http.createServer(credentials, app);
 
 /**
  * Listen on provided port, on all network interfaces.
