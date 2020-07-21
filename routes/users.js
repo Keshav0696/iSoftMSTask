@@ -2,7 +2,10 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var bcrypt = require('bcryptjs');
+const config = require('../config')
 const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
+
 const User = mongoose.model('User');
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -92,6 +95,7 @@ router.post('/createUser', async function(req, res){
     User.createUser(newUser, function(err, user){
       try{
       if(err) throw new Error(err);
+      sendMail(user);
       res.status(200).send({status: 200, data: newUser}).end()
     }
     catch(e){
@@ -108,6 +112,32 @@ router.post('/createUser', async function(req, res){
 }
 
 });
+
+function sendMail(user){
+  var transporter = nodemailer.createTransport({
+    host: config.SMTP_HOST,
+    secure : true,
+    service: 'gmail',
+    port: config.SMTP_PORT,
+    auth: {
+      user: config.SMTP_USER,
+      pass: config.SMTP_PASSWORD
+    }
+  });
+  var mailOptions = {
+    to: user.email,
+    from:  config.SMTP_FROM,
+    subject: 'Welcome to the site',
+    html: `<p> Welcome ${user.firstname} ${user.lastname}</p>
+    <p>Please click the Link Reset The Password </p>
+     <a href ="http://localhost:4200/resetPassword/">Reset Password</a>
+            `
+  };
+  transporter.sendMail(mailOptions, function(err){
+    if(err){  console.log(err)}
+    
+  });
+}
 router.post('/editUser', async function (req, res) {
   if (req.body.data && req.body._id) {
     let userId = req.body._id;

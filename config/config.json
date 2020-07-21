@@ -6,6 +6,6 @@
     "SMTP_HOST": "smtp.gmail.com",
     "SMTP_PORT": 465,
     "SMTP_USER": "zuhed123@gmail.com",
-    "SMTP_PASSWORD":"Udaan@123",
+    "SMTP_PASSWORD":"Udaandev@123",
      "SMTP_FROM": "zuhed123@gmail.com"
   }
