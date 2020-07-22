@@ -127,7 +127,7 @@ function sendMail(user){
   var mailOptions = {
     to: user.email,
     from:  config.SMTP_FROM,
-    subject: 'Welcome to the site',
+    subject: 'Welcome to the FBA Delivery',
     html: `<p> Welcome ${user.firstname} ${user.lastname}</p>
     <p>Please click the Link Reset The Password </p>
      <a href ="http://localhost:4200/resetPassword/">Reset Password</a>

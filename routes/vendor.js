@@ -78,9 +78,7 @@ router.post('/editVendor', async function (req, res) {
    if(emailValidator(body.data.email) && phoneNoValidator(body.data.phoneNo)){
 
     if(body  && body.data && body.vendorId ){
-      if(req.user.role!='ADMIN'){
-        res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
-      }
+
    let edited = await User.findByIdAndUpdate(body.vendorId, {
        $set: body.data
    },
