@@ -243,6 +243,8 @@ function(req, res) {
         transporter.sendMail(mailOptions, (err, info) => {
             if(!err){
                 console.log("Email sent")
+            } else {
+              console.log(err)
             }
         })
         })
