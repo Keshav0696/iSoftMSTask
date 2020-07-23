@@ -27,6 +27,7 @@ var UserSchema = mongoose.Schema({
   email: {
     type: String,
   },
+  paypalMail: String,
   facebookId : String,
   status  : {
    type : String,

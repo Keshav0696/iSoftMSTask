@@ -3,6 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 const util = require(process.cwd() + '/util');
 const upload = util.upload;
+const path = require("path");
 const mongoose = require('mongoose');
     User = mongoose.model('User');
     BusinessInfo = mongoose.model('VendorBizInfo');
@@ -171,6 +172,15 @@ router.get('/deleteVendor/:id', async function (req, res) {
       res.send({status : 500, data : null , message : "Info Not Found"});
     }
   })
+
+
+  router.get('/getImage/:id', async function(req, res){
+    let id = req.params.id;
+    let found  =  await BusinessInfo.findOne({_id : id});
+    res.sendFile(path.resolve(process.cwd() + '/' + found.shipperLogo));
+  })
+  
+
   router.post('/uploadBusinessLogo', upload, async (req, res) => {
     if (!req.file) {
       res.status(500).send({ status: 500, data: null, message: 'no file recieved' });
@@ -185,14 +195,13 @@ router.get('/deleteVendor/:id', async function (req, res) {
 
   router.post('/savePaymentInfo', upload, async (req, res) => {
     let body = req.body;
-    let found  =  await User.findOne({_id : body.vendor_id});
-    if(body && found){
+    if(body){
       try{
-        let updated =  await PaymentInfo.findByIdAndUpdate(body.vendor_id, {
+        let updated =  await User.findByIdAndUpdate(body.vendor_id, {
           $set : body.data
         },
         {
-             upsert : true
+             new : true
         });
         if(updated){
           res.send({status : 200, data : updated});
@@ -210,7 +219,7 @@ router.get('/deleteVendor/:id', async function (req, res) {
 
   router.get('/getPaymentInfo/:id', async function(req, res){
     let id = req.params.id;
-    let found  =  await PaymentInfo.findOne({_id : id});
+    let found  =  await User.findOne({_id : id});
     if(found){
       res.send({status : 200, data : found});
     }else{
@@ -218,60 +227,18 @@ router.get('/deleteVendor/:id', async function (req, res) {
     }
   })
 
-  router.post('/saveCompanyDetails', async function(req, res){
-    let body = req.body;
-    if(body){
-      try{
-        let toSave =   new CompanyDetail(body);
-        let saved = await toSave.save();
-        if(saved){
-          res.send({status : 200, data : saved});
-        }else{
-          res.send({status : 500, data : null})
-        }
-      }
-      catch(e){
-        console.log(e)
-      }
-    }
-  })
-
-  router.get('/getAllCompanyDetails/:id', async function(req, res){
+  router.get('/saveFbaPallet', async function(req, res){
     let id = req.params.id;
-    let found  =  await CompanyDetail.find({vendor_id : id});
-    if(found.length){
+    let found  =  await User.findOne({_id : id});
+    if(found){
       res.send({status : 200, data : found});
     }else{
-      res.send({status : 500, data : null , message : "Details Not Found"});
+      res.send({status : 500, data : null , message : "Info Not Found"});
     }
   })
 
-  router.post('/addLocation', async function(req, res){
-    let body = req.body;
-    if(body){
-      try{
-        let toSave =   new Location(body);
-        let saved = await toSave.save();
-        if(saved){
-          res.send({status : 200, data : saved});
-        }else{
-          res.send({status : 500, data : null})
-        }
-      }
-      catch(e){
-        console.log(e)
-      }
-    }
-  })
 
-  router.get('/getAllLocations/:id', async function(req, res){
-    let id = req.params.id;
-    let found  =  await Location.find({vendor_id : id});
-    if(found.length){
-      res.send({status : 200, data : found});
-    }else{
-      res.send({status : 500, data : null , message : "Details Not Found"});
-    }
-  })
+
+
 
 module.exports = router;
