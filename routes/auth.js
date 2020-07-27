@@ -4,15 +4,14 @@ var router = express.Router();
 const User = require('../models/User')
 const crypto = require('crypto');
 var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy;
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const FacebookTokenStrategy = require('passport-facebook-token');
+// const GoogleTokenStrategy = require('passport-google-token');
+const GoogleTokenStrategy = require('passport-google-token').Strategy;
 var bcrypt = require('bcryptjs');
 const config = require('../config')
 const nodemailer = require('nodemailer');
 const passwordResetToken = require('../models/ResetPassword');
 const jwt = require('jsonwebtoken');
-
-
 
 
 passport.serializeUser(function(user, done) {
@@ -75,7 +74,7 @@ router.post('/login', function (req, res, next) {
 });
 
 
-    var LocalStrategy = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 passport.use(new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password'
@@ -103,12 +102,11 @@ req.logout();
 res.send(null)
 });
 
-passport.use(new FacebookStrategy({
-    clientID: "871917056648489",
-    clientSecret: "666392b46f6d5e9717a505b7a17d7c01",
-    callbackURL: "https://fbaapi.udaantechnologies.com/api/auth/facebook/callback",
-  },
-  function(accessToken, refreshToken, profile, done) {
+passport.use(new FacebookTokenStrategy({
+    clientID: '578617303046530',
+    clientSecret: 'db3754a847c830d48c4b9581138aedc3',
+    fbGraphVersion: 'v3.0'
+  }, function(accessToken, refreshToken, profile, done) {
     User.findOne({ 'facebookId' : profile.id }, function(err, user) {
       if (err) return done(err);
       if (user) return done(null, user);
@@ -134,73 +132,57 @@ passport.use(new FacebookStrategy({
         });
       }
     });
-  }));
-
-
-  passport.use(new GoogleStrategy({
-    clientID: "930205980963-dhp4ejdi8kfmer9ttt9h534flfu1efv1.apps.googleusercontent.com",
-    clientSecret: "awKNylRbknwg-U5qZcUlmH_u",
-    callbackURL: "https://28b8ffd1a6d7.ngrok.io/api/auth/google/callback"
-  },
-  function(token, tokenSecret, profile, done) {
-      User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        return done(err, user);
-      });
   }
 ));
 
+router.post('/facebook/token',
+  passport.authenticate('facebook-token'),
+  function (req, res) {
+    // do something with req.user
+    // res.send(req.user? 200 : 401);
+    res.status(req.user? 200 : 401).json({user: req.user}).end();
+  });
 
+passport.use(new GoogleTokenStrategy({
+    clientID: '986961472243-fulld3ffucmhascuns30o5k39i93hktc.apps.googleusercontent.com',
+    clientSecret: 'TXJjvl8v7n-hX5Arr7LjzboP'
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOne({ 'googleId' : profile.id }, function(err, user) {
+      if (err) return done(err);
+      if (user) return done(null, user);
+      else {
+        // if there is no user found with that facebook id, create them
+        var newUser = new User();
+  
+        // set all of the facebook information in our user model
+        newUser.googleId = profile.id;
+        newUser.token = accessToken;
+        newUser.role = "MEMBER";
+        newUser.firstname  = profile.displayName.split(' ').slice(0, -1).join(' ');
+        newUser.lastname  = profile.displayName.split(' ').slice(-1).join(' ');
 
+        newUser.type  = 'google';
+        if (typeof profile.emails != 'undefined' && profile.emails.length > 0)
+          newUser.email = profile.emails[0].value;
+  
+        // save our user to the database
+        newUser.save(function(err) {
+          if (err) throw err;
+          return done(null, newUser);
+        });
+      }
+    });
+  }
+));
 
-router.get('/facebook/callback',
-    passport.authenticate('facebook', { failureRedirect: 'http://localhost:4200/login' }),
-function(req, res) {
-    var responseHTML = '<html><head><title>Main</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
-    responseHTML = responseHTML.replace('%value%', JSON.stringify({
-        user: req.user
-    }));
-    res.status(200).send(responseHTML);
-
-
-});
-
-
-// router.get("/fail", (req, res) => {
-//   res.send("Failed attempt");
-// });
-
-// router.get("/", (req, res) => {
-//   res.send("Success");
-// });
-
-router.get('/facebook',
-  passport.authenticate('facebook'));
-
-//   router.get('/facebook/callback',
-//   passport.authenticate('facebook', { failureRedirect: '/login' }),
-//   function(req, res) {
-//     // Successful authentication, redirect home.
-//     console.log(req.user)
-//     res.redirect('/');
-//   }
-// );
-
-router.get('/google',
-passport.authenticate('google', { scope: 'https://www.google.com/m8/feeds' }));
-
-router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: 'http://localhost:4200/login' }),
-function(req, res) {
-    var responseHTML = '<html><head><title>Main</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
-    responseHTML = responseHTML.replace('%value%', JSON.stringify({
-        user: req.user
-    }));
-    res.status(200).send(responseHTML);
-
-
-});
-
-
+router.post('/google/token',
+  passport.authenticate('google-token'),
+  function (req, res) {
+    // do something with req.user
+    // res.send(req.user? 200 : 401);
+    res.status(req.user? 200 : 401).json({user: req.user}).end();
+  });
 
   router.post('/forgot-password', async function (req, res) {
     if (!req.body.email) {

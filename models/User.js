@@ -29,6 +29,7 @@ var UserSchema = mongoose.Schema({
   },
   paypalMail: String,
   facebookId : String,
+  googleId : String,
   status  : {
    type : String,
    enum : ["active", "deactive"],
