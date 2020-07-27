@@ -111,7 +111,7 @@ app.use('/api/vendor',jwt, vendorRouter);
 app.use('/api/operator',jwt, operatorRouter);
 app.use('/api/shipmode',jwt, shipmentModeRouter);
 app.use('/api/shipment',jwt, shipmentRouter);
-app.use('/api/accessories',jwt, accessoriesRouter);
+app.use('/api/accessories', accessoriesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

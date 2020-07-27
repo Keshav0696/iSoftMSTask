@@ -3,8 +3,23 @@ var router = express.Router();
 const mongoose = require('mongoose');
 
 var AccessoriesRate = mongoose.model('accessoriesRate');
+var passport = require('passport');
 
-router.post('/addAccessoriesRate', async function (req, res) {
+
+
+function jwt (req, res, next){
+  passport.authenticate('jwt', { session: false }, function(err, user, info) { 
+      if (err) { return next(err); } 
+      if (!user) { return res.send("Custom Unauthorised").end(); } 
+      // edit as per comment
+      //return res.send("Test Route Accessed").end();
+      req.user = user;   // Forward user information to the next middleware
+      next();
+  })(req, res, next);
+}
+
+
+router.post('/addAccessoriesRate', jwt, async function (req, res) {
   if(req.user.role == 'ADMIN'){
     if(req.body) {
       let toSave = new AccessoriesRate(req.body);
@@ -22,7 +37,9 @@ router.post('/addAccessoriesRate', async function (req, res) {
   } 
 });
 
-router.put('/editAccessoriesRate/:id', async function (req, res) {
+
+
+router.put('/editAccessoriesRate/:id', jwt, async function (req, res) {
   if(req.user.role == 'ADMIN'){
     if(req.body && req.params.id) {
 
