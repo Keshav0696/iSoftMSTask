@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model("User");
 const Shipment = mongoose.model("Shipment");
 const Destination = mongoose.model("Destination");
-
+const VendorRate = mongoose.model('VendorRate');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -35,5 +35,14 @@ router.get('/dashboard', async function(req, res) {
     }]);
   res.status(200).send({status : 200, data : {shipment_count,active_vendor, customer_count, total_billing_price}})
 });
+
+router.get('/getAllVendorRates',async function(req,res){
+  let allRates = await VendorRate.find({}).populate('vendor_id');
+  if(allRates.length){
+    res.status(200).send({status:200, data:allRates});
+  }else{
+    res.status(500).send({status:500, message: 'No Rates Exist'})
+  }
+})
 
 module.exports = router;
