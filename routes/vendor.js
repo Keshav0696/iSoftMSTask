@@ -313,6 +313,67 @@ router.get('/getAllArrivingPort', async function (req, res) {
 
 });
 
+router.post('/saveLocations', async function (req, res) {
+  if(req.body) {
 
+    let toSave = new Location(req.body);
+    let saved = await toSave.save();
+    if(saved){
+      res.status(200).json(saved);
+    }else{
+      
+    res.status(500).json({ status: 500, data: null, message: "Problem with saveLocations" });
+
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+router.get('/getAllLocations/:id',async function(req,res){
+    if(req.params.id) {
+  let allLocations = await Location.find({vendor_id : req.params.id});
+  if(allLocations.length){
+    res.status(200).send({status:200, data:allLocations});
+  }else{
+    res.status(500).send({status:500, message: 'No Locations Exist'})
+  }
+}else{
+   res.status(500).send({status:500, message: 'Please Send User Id'})
+}
+})
+
+
+router.put('/editLocation/:id', async function (req, res) {
+  if(req.body && req.params.id) {
+    var edited = await Location.findOneAndUpdate({ _id: req.params.id }, {
+      $set:  req.body
+       },
+      {
+        new: true
+      });
+    if (edited) {
+      res.send(edited);
+    } else {
+      res.status(500).send({status: 500, data: null, message: "Location is not available"});
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+router.get('/deleteLocation/:id', async function (req, res) {
+    if (req.params.id) {
+      var locationId = req.params.id;
+      var removed = await Location.remove({ _id: locationId });
+      if (removed.deletedCount) {
+        res.send(removed);
+      } else {
+        res.status(500).send({status: 500, data: null, message: 'Location does not exist' }).end()
+      }
+    } else {
+      res.status(500).send({status: 500, data: null, message: 'Please send Vendor Id' }).end()
+    }
+  })
 
 module.exports = router;
