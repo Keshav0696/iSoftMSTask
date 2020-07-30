@@ -3,9 +3,9 @@
     "url": "http://localhost:3000/",
     "dbURI": "mongodb://localhost:27017/fbadelivery",
     "sessionSecret": "testappudaan",
-    "SMTP_HOST": "smtp.gmail.com",
+    "SMTP_HOST": "mail.fbaxchange.com",
     "SMTP_PORT": 465,
-    "SMTP_USER": "zuhed123@gmail.com",
-    "SMTP_PASSWORD":"Udaandev@123",
-     "SMTP_FROM": "zuhed123@gmail.com"
+    "SMTP_USER": "support@fbaxchange.com",
+    "SMTP_PASSWORD":"sO-ryu.#*ZUp",
+     "SMTP_FROM": "support@fbaxchange.com"
   }

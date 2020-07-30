@@ -74,36 +74,12 @@ const vendorRateSchema = new mongoose.Schema({
         },
     },
     fbaPallet: {
-        address: {
-            type: String,
-            required: true
-        },
-        city: {
-            type: String,
-            required: true
-        },
-        zip_code: {
-            type: String,
-            required: true
-        },
-        country: {
-            type: String,
-            required: true
-        },
-        rate: {
-            type: Number,
-            required: true,
-            default: 0
-        },
         freePickupRadius: {
             type: Number,
             required: true,
             default: 25
         },
-        wareHouse: {
-            type: String,
-            required: true
-        },
+       
         palletsNeeded: {
             type: Number,
             required: true,
@@ -123,7 +99,28 @@ const vendorRateSchema = new mongoose.Schema({
             type: Number,
             required: true,
             default: 72
-        }
+        },
+        rates : [{
+          wareHouse : {
+            type: String,
+            required: true
+          },
+          rate : {
+            type: Number,
+            required: true,
+            default: 0
+          },
+          location: {
+            type: String,
+            required: true,
+            default: 0
+          },
+          expDate : {
+            type: Date,
+            required: Date.now,
+            default: 0 
+          }
+        }]
 
     },
     createdAt: {
