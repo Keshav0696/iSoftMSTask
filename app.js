@@ -20,7 +20,7 @@ require('./models/vendorBizInfo');
 require('./models/paymentInfo');
 require('./models/location');
 require('./models/accessoriesRate');
-
+require('./models/fbaPalletRates');
 
 const config = require('./config');
 const User = mongoose.model('User')

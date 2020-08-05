@@ -73,56 +73,7 @@ const vendorRateSchema = new mongoose.Schema({
             default: 0
         },
     },
-    fbaPallet: {
-        freePickupRadius: {
-            type: Number,
-            required: true,
-            default: 25
-        },
-       
-        palletsNeeded: {
-            type: Number,
-            required: true,
-            default: 0
-        },
-        palletMaxLength: {
-            type: Number,
-            required: true,
-            default: 48
-        },
-        palletMaxWeight: {
-            type: Number,
-            required: true,
-            default: 48
-        },
-        palletMaxHeight: {
-            type: Number,
-            required: true,
-            default: 72
-        },
-        rates : [{
-          wareHouse : {
-            type: String,
-            required: true
-          },
-          rate : {
-            type: Number,
-            required: true,
-            default: 0
-          },
-          location: {
-            type: String,
-            required: true,
-            default: 0
-          },
-          expDate : {
-            type: Date,
-            required: Date.now,
-            default: 0 
-          }
-        }]
 
-    },
     createdAt: {
         type: Date,
         required: true,

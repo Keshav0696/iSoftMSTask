@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
     CompanyDetail = mongoose.model('CompanyDetail');
     Location = mongoose.model('Location');
     VendorRate = mongoose.model('VendorRate');
+    FbaPalletRate = mongoose.model('FbaPalletRate');
     ArrivingPort = mongoose.model('ArrivingPort')
 
 
@@ -229,25 +230,89 @@ router.get('/deleteVendor/:id', async function (req, res) {
     }
   })
 
-  router.put('/editPalletRate/:id', async function (req, res) {
-    if(req.body && req.params.id) {
-      var edited = await VendorRate.findOneAndUpdate({ vendor_id: req.params.id }, {
-        $set: {
-          fbaPallet : req.body
-        }
-        },
-        {
-          upsert: true
-        });
-      if (edited) {
-        res.send(edited);
-      } else {
-        res.status(500).send({status: 500, data: null, message: "Accessories are not available"});
-      }
+//   router.put('/editPalletRate/:id', async function (req, res) {
+//     if(req.body && req.params.id) {
+//       var edited = await VendorRate.findOneAndUpdate({ vendor_id: req.params.id }, {
+//         $set: {
+//           fbaPallet : req.body
+//         }
+//         },
+//         {
+//           upsert: true
+//         });
+//       if (edited) {
+//         res.send(edited);
+//       } else {
+//         res.status(500).send({status: 500, data: null, message: "Accessories are not available"});
+//       }
+//     } else {
+//       res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+//     }
+// });
+
+router.put('/editPalletRate/:id', async function (req, res) {
+  if(req.body && req.params.id) {
+    var edited = await FbaPalletRate.findOneAndUpdate({ _id: req.params.id }, {
+      $set:  req.body
+       },
+      {
+        new: true
+      });
+    if (edited) {
+      res.send(edited);
     } else {
-      res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+      res.status(500).send({status: 500, data: null, message: "FbaPalletRate is not available"});
     }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
 });
+
+router.post('/savePalletRate', async function (req, res) {
+  if(req.body) {
+    let toSave = new FbaPalletRate(req.body);
+    let saved = await toSave.save();
+    if(saved){
+      res.status(200).json(saved);
+    }else{
+      
+    res.status(500).json({ status: 500, data: null, message: "Problem with savePalletRate" });
+
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+router.get('/getAllPalletRate/:id',async function(req,res){
+  if(req.params.id) {
+let allpalletrates = await FbaPalletRate.find({vendor_id : req.params.id}).populate('wareHouse location');
+if(allpalletrates.length){
+  res.status(200).send({status:200, data:allpalletrates});
+}else{
+  res.status(500).send({status:500, message: 'No FbaPalletRate Exist'})
+}
+}else{
+ res.status(500).send({status:500, message: 'Please Send User Id'})
+}
+})
+
+
+router.get('/deletePalletRate/:id', async function (req, res) {
+  if (req.params.id) {
+    var rateId = req.params.id;
+    var removed = await FbaPalletRate.remove({ _id: rateId });
+    if (removed.deletedCount) {
+      res.send(removed);
+    } else {
+      res.status(500).send({status: 500, data: null, message: 'PalletRate does not exist' }).end()
+    }
+  } else {
+    res.status(500).send({status: 500, data: null, message: 'Please send Vendor Id' }).end()
+  }
+})
+
+
 
 router.put('/editContainerRate/:id', async function (req, res) {
   if(req.body && req.params.id) {

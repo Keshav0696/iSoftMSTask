@@ -33,6 +33,6 @@ const locationSchema = new mongoose.Schema({
     },
     createdAt: { type: Date, required: true, default: Date.now },
 });
-
+var Location = mongoose.model('Location', locationSchema)
 
 module.exports = mongoose.model('Location', locationSchema);
