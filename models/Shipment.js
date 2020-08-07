@@ -10,12 +10,26 @@ var ShipmentSchema = mongoose.Schema({
   comments : String,
   service_level : String,
   price : Number,
+  temperature : Number,
   pickupInfo:{
     business_name: String,
     address : String,
     contact_name : String,
     contact_no : String,
     contact_email: String,
+    city : String,
+    state : String,
+    zip_code : String,
+    driverAssistance : Boolean,
+    tarp : Boolean,
+    from_date: {
+      type : Date,
+      default : Date.now
+    },
+    to_date : {
+      type : Date,
+      default : Date.now
+    },
     scheduled_date: {
       type : Date,
       default : Date.now
@@ -31,6 +45,18 @@ var ShipmentSchema = mongoose.Schema({
     contact_name : String,
     contact_no : String,
     contact_email: String,
+    city : String,
+    state : String,
+    zip_code : String,
+        from_date: {
+      type : Date,
+      default : Date.now
+    },
+    to_date : {
+      type : Date,
+      default : Date.now
+    },
+    driverAssistance : Boolean,
     scheduled_date: {
       type : Date,
       default : Date.now

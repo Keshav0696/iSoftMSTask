@@ -2,10 +2,12 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const User = mongoose.model("User");
-const Shipment = mongoose.model("Shipment");
 const Destination = mongoose.model("Destination");
 const VendorRate = mongoose.model('VendorRate');
+const nodemailer = require('nodemailer');
 const zipcodes = require('zipcodes');
+const config = require('../config')
+const Shipment = mongoose.model('Shipment');
 const FbaPalletRate = mongoose.model("FbaPalletRate");
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -84,53 +86,138 @@ router.post('/getVendorRates',async function(req, res){
 
     }
     else{
-      res.status(500).send({status :500, message : 'No Rates for Destination'})
+      res.status(500).send({status :500, message : 'No Rates for Destination'});
     }
 
   }
 })
 
-// function sendMail(user){
-//   var transporter = nodemailer.createTransport({
-//     host: config.SMTP_HOST,
-//     secure : true,
-//     service: 'gmail',
-//     port: config.SMTP_PORT,
-//     auth: {
-//       user: config.SMTP_USER,
-//       pass: config.SMTP_PASSWORD
-//     }
-//   });
-//   var mailOptions = {
-//     to: user.email,
-//     from:  config.SMTP_FROM,
-//     subject: 'Welcome to the FBA Delivery',
-//     html: `<p> Welcome ${user.firstname} ${user.lastname}</p>
-//     <p>Please click the Link Reset The Password </p>
-//      <a href ="http://localhost:4200/resetPassword/">Reset Password</a>
-//             `
-//   };
-//   transporter.sendMail(mailOptions, function(err){
-//     if(err){  console.log(err)}
+function emailValidator(value){
+  let pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  let emailVal = pattern.test(value);
+  return emailVal;
+}
+function phoneNoValidator(value){
+  let phonePattern =/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+  let phoneNOVal = phonePattern.test(value);
+  return phoneNOVal;
+}
+
+function sendMail(user){
+    var transporter = nodemailer.createTransport({
+          host: config.SMTP_HOST,
+          secure : true,
+          port: config.SMTP_PORT,
+          auth: {
+            user: config.SMTP_USER,
+            pass: config.SMTP_PASSWORD
+          }
+        });
+  var mailOptions = {
+    to: user.email,
+    from:  config.SMTP_FROM,
+    subject: 'Welcome to the FBA Delivery',
+    html: `<p> Welcome ${user.firstname} ${user.lastname}</p>
+    <p>Please click the Link Reset The Password </p>
+     <a href ="http://localhost:4200/resetPassword/">Reset Password</a>
+            `
+  };
+  transporter.sendMail(mailOptions, function(err){
+    if(err){  console.log(err)}
     
-//   });
-// }
+  });
+}
 
-// router.get('/editShipper', async function(req,res){
-//   if(req.body){
-//     let email = req.body.email;
-//     let found =  await User.findOne({email : email});
-//     if(!found){
 
+
+router.post('/editShipper', async function(req,res){
+  req.body.type = 'local';
+  req.body.status = 'active';
+  req.body.role = req.body.role || "MEMBER"; 
+  if(req.body.email && req.body.phoneNo && emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
+  var newUser = new User(req.body);
+  var found = await User.findOne({ email: req.body.email});
+  let shipment = {};
+if(!found){
+  
+  User.createUser(newUser,async  function(err, user){
+    try{
+    if(err) throw new Error(err);
+    if(user){
+    sendMail(user);
+    res.status(201).send({status: 201, data: newUser }).end();
+    }else{
+      res.status(500).send({status: 500, data: null, message: "Problem with save shipment"}).end()
+
+    }
+  }
+  catch(e){
+    console.log(e)
+  }
+  });
+
+}
+else{
+   User.findOneAndUpdate({email: req.body.email},{
+     $set : req.body
+   },{
+     new : true
+   }, async function(err, result){
+     if(err){
+      res.status(500).send({status :500, message : 'Probem with Update Shipper'})
+     }else{
+       if(result){
+      res.status(200).send({status: 200, data: result}).end();
+      }else{
+        res.status(500).send({status: 500, data: null, message: "Problem with save shipment"}).end()
+      }
+     }
+   })
+}
+}else{
+res.status(500).send({status: 500, data: null, message: "User data not Validated"}).end()
+}
+})
+
+
+router.post('/saveShipperDetail', async function(req,res){
+if(req.body){
+  let saved = await saveShipment(req.body);
+  if(saved){
+    res.status(200).send({status: 200, data: saved}).end();
+  }else{
+    res.status(500).send({status: 500, data: null, message: "Problem with save shipment Detail"}).end()
+  }
+}else{
+  res.status(500).send({status: 500, data: null, message: "Please send all required fields"}).end()
+
+}
+})
+
+// async function saveShipment(data){
+//   return new Promise(async (resolve, reject)=>{
+//   if(!data.shipment_id){
+//     let toSave = new Shipment({user_id : data.user_id});
+//     let saved =  await toSave.save();
+//     if(!saved){
+//       reject();
 //     }
-//   }
+//     resolve(toSave.id);
+//     }
 //   else{
-//     res.status(500).send({message : "Please send the required Fields"})
+//   Shipment.findOneAndUpdate({_id : data.shipment_id},{
+//      $set : data.data
+//   }, {
+//     new: true
+//   } ,function(err, result){
+
+//     if(err){
+//       reject();
+//     }
+//     resolve( result);
+//   })
 //   }
 // })
-
-
-
+// }
 
 module.exports = router;
-
