@@ -20,6 +20,7 @@ var ShipmentSchema = mongoose.Schema({
     city : String,
     state : String,
     zip_code : String,
+    instruction : String,
     driverAssistance : Boolean,
     tarp : Boolean,
     from_date: {
@@ -48,13 +49,12 @@ var ShipmentSchema = mongoose.Schema({
     city : String,
     state : String,
     zip_code : String,
-        from_date: {
+    instruction : String,
+    from_date: {
       type : Date,
-      default : Date.now
     },
     to_date : {
       type : Date,
-      default : Date.now
     },
     driverAssistance : Boolean,
     scheduled_date: {
@@ -65,6 +65,20 @@ var ShipmentSchema = mongoose.Schema({
       type : Date,
       default : Date.now
     }
+  },
+
+  paymentInfo : {
+    firstname : String,
+    lastname : String,
+    email : String,
+    phoneNo : String,
+    city : String,
+    state : String,
+    zip_code : String,
+    holderName : String,
+    cardNumber : String,
+    expiry : String,
+    cvc : String
   },
   shipmentNO : String,
   modeType : {

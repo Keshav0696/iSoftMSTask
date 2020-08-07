@@ -182,7 +182,8 @@ res.status(500).send({status: 500, data: null, message: "User data not Validated
 
 router.post('/saveShipperDetail', async function(req,res){
 if(req.body){
-  let saved = await saveShipment(req.body);
+  let toSave = new Shipment(req.body.data);
+  let saved =  await toSave.save();
   if(saved){
     res.status(200).send({status: 200, data: saved}).end();
   }else{
