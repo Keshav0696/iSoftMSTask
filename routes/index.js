@@ -182,6 +182,7 @@ res.status(500).send({status: 500, data: null, message: "User data not Validated
 
 router.post('/saveShipperDetail', async function(req,res){
 if(req.body){
+  req.body.data.shipmentNO = makeid(4).toUpperCase() + Math.floor(100000 + Math.random() * 900000);
   let toSave = new Shipment(req.body.data);
   let saved =  await toSave.save();
   if(saved){
@@ -194,6 +195,16 @@ if(req.body){
 
 }
 })
+
+function makeid(length) {
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 // async function saveShipment(data){
 //   return new Promise(async (resolve, reject)=>{

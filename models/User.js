@@ -12,8 +12,7 @@ var UserSchema = mongoose.Schema({
     required : true
   },
   bizname : {
-    type : String,
-    required : true
+    type : String
   },
   role : {
     type : String,
