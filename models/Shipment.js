@@ -25,11 +25,9 @@ var ShipmentSchema = mongoose.Schema({
     tarp : Boolean,
     from_date: {
       type : Date,
-      default : Date.now
     },
     to_date : {
       type : Date,
-      default : Date.now
     },
     scheduled_date: {
       type : Date,
