@@ -3,32 +3,23 @@ const { truncate } = require('fs');
 
 const vendorBizInfoSSchema = new mongoose.Schema({
     shipperLogo: {
-        type: String,
-        required: true
+        type: String
     },
     businessName: {
         type: String,
         required: true
     },
     streetAdd: {
-        type: String,
-        required: true
-    },
-    DBA: {
-        type: String,
-        required: true
+        type: String
     },
     city: {
-        type: String,
-        required: true
+        type: String
     },
     state: {
-        type: String,
-        required: true
+        type: String
     },
     zip_code: {
-        type: String,
-        required: true
+        type: String
     },
     vendor_id : {
         type : mongoose.Schema.Types.ObjectId,

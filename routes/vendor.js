@@ -150,6 +150,7 @@ router.get('/deleteVendor/:id', async function (req, res) {
           $set : body.data
         },
         {
+             new : true,
              upsert : true
         });
         if(updated){

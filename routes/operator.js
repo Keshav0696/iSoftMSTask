@@ -9,7 +9,7 @@ router.post('/addOperator', async function (req, res) {
 
    let body = req.body;
    body.status = body.status || 'active';
-   body.role = body.role || 'OPERATOR';
+   body.role =  'OPERATOR';
    let found = await User.findOne({email : body.email})
    if(body && req.user.role=='ADMIN'){
     if(!found){
@@ -48,6 +48,23 @@ router.post('/editOperator', async function (req, res) {
     }else{
         res.status(500).json({status : 500, message: "Please Send Operator Id" });
     }
+});
+
+router.get('/getAllOperator', async function (req, res) {
+  try{
+  if(req.user.role!='ADMIN'){
+    res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+  }
+  let found = await User.find({role : "OPERATOR"});
+   if(found && found.length){
+      res.status(200).json(found);
+   }else{
+       res.status(500).json({ status: 500, data: null, message: "No data exist" });
+   }
+  }
+  catch(e){
+    console.log(e)
+  }
 });
 
 router.post('/activeDeactivate', async function (req, res) {

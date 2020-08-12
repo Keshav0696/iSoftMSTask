@@ -19,12 +19,10 @@ var fbaPalletSchema = new mongoose.Schema({
         },
         palletMaxLength: {
             type: Number,
-            required: true,
-            default: 48
+            default: 40
         },
         palletMaxWeight: {
             type: Number,
-            required: true,
             default: 48
         },
         palletMaxHeight: {
@@ -46,6 +44,10 @@ var fbaPalletSchema = new mongoose.Schema({
             type: Number,
             required: true,
             default: 0
+          },
+          expDate : {
+            type: Date,
+            required: true,
           },
           createdAt: {
             type: Date,
