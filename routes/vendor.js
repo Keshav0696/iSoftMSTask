@@ -10,8 +10,9 @@ const mongoose = require('mongoose');
     PaymentInfo = mongoose.model('PaymentInfo');
     CompanyDetail = mongoose.model('CompanyDetail');
     Location = mongoose.model('Location');
-    VendorRate = mongoose.model('VendorRate');
+    // VendorRate = mongoose.model('VendorRate');
     FbaPalletRate = mongoose.model('FbaPalletRate');
+    FbaContainerRate = mongoose.model('FbaContainerRate');
     ArrivingPort = mongoose.model('ArrivingPort')
 
 
@@ -313,40 +314,98 @@ router.get('/deletePalletRate/:id', async function (req, res) {
   }
 })
 
-
-
 router.put('/editContainerRate/:id', async function (req, res) {
   if(req.body && req.params.id) {
-    var edited = await VendorRate.findOneAndUpdate({ vendor_id: req.params.id }, {
-      $set: {
-        fbaContainer : req.body
-      }
-    },
+    var edited = await FbaContainerRate.findOneAndUpdate({ _id: req.params.id }, {
+      $set:  req.body
+       },
       {
-        upsert: true
+        new: true
       });
     if (edited) {
       res.send(edited);
     } else {
-      res.status(500).send({status: 500, data: null, message: "Accessories are not available"});
+      res.status(500).send({status: 500, data: null, message: "FbaContainerRate is not available"});
     }
   } else {
     res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
   }
 });
 
-router.get('/getPalletRate/:id', async function (req, res) {
-  if(req.params.id){
-  let found = await VendorRate.findOne({vendor_id: req.params.id})
-   if(found){
-      res.status(200).json(found);
-   }else{
-       res.status(500).json({ status: 500, data: null, message: "No data exist" });
-   }
-  }else{
-    res.status(500).json({ status: 500, data: null, message: "Rate id is required" });
+router.post('/saveContainerRate', async function (req, res) {
+  if(req.body) {
+    let toSave = new FbaContainerRate(req.body);
+    let saved = await toSave.save();
+    if(saved){
+      res.status(200).json(saved);
+    }else{
+      
+    res.status(500).json({ status: 500, data: null, message: "Problem with saveContainerRate" });
+
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
   }
 });
+
+router.get('/getAllContainerRate/:id', async function (req, res) {
+  if (req.params.id) {
+    let allcontainerrates = await FbaContainerRate.find({ vendor_id: req.params.id }).populate('wareHouse arrivingPort');
+    if (allcontainerrates.length) {
+      res.status(200).send({ status: 200, data: allcontainerrates });
+    } else {
+      res.status(500).send({ status: 500, message: 'No FbaContainerRate Exist' })
+    }
+  } else {
+    res.status(500).send({ status: 500, message: 'Please Send User Id' })
+  }
+})
+
+
+router.get('/deleteContainerRate/:id', async function (req, res) {
+  if (req.params.id) {
+    var rateId = req.params.id;
+    var removed = await FbaContainerRate.remove({ _id: rateId });
+    if (removed.deletedCount) {
+      res.send(removed);
+    } else {
+      res.status(500).send({status: 500, data: null, message: 'ContainerRate does not exist' }).end()
+    }
+  } else {
+    res.status(500).send({status: 500, data: null, message: 'Please send Vendor Id' }).end()
+  }
+})
+
+// router.put('/editContainerRate/:id', async function (req, res) {
+//   if(req.body && req.params.id) {
+//     var edited = await VendorRate.findOneAndUpdate({ vendor_id: req.params.id }, {
+//       $set:  req.body
+//       },
+//       {
+//         upsert: true
+//       });
+//     if (edited) {
+//       res.send(edited);
+//     } else {
+//       res.status(500).send({status: 500, data: null, message: "Accessories are not available"});
+//     }
+//   } else {
+//     res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+//   }
+// });
+
+// router.get('/getPalletRate/:id', async function (req, res) {
+//   if(req.params.id){
+//   let found = await VendorRate.findOne({vendor_id: req.params.id})
+//    if(found){
+//       res.status(200).json(found);
+//    }else{
+//        res.status(500).json({ status: 500, data: null, message: "No data exist" });
+//    }
+//   }else{
+//     res.status(500).json({ status: 500, data: null, message: "Rate id is required" });
+//   }
+// });
 
 router.put('/editFtlRate/:id', async function (req, res) {
   if(req.body && req.params.id) {

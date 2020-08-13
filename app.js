@@ -13,7 +13,7 @@ require('./models/ShipmentMode');
 require('./models/Shipment');
 require('./models/ShipDoc');
 require('./models/destination');
-require('./models/vendorRate');
+// require('./models/vendorRate');
 require('./models/arrivingPort');
 require('./models/companyDetail');
 require('./models/vendorBizInfo');
@@ -21,6 +21,7 @@ require('./models/paymentInfo');
 require('./models/location');
 require('./models/accessoriesRate');
 require('./models/fbaPalletRates');
+require('./models/fbaContainerRates');
 
 const config = require('./config');
 const User = mongoose.model('User')

@@ -3,7 +3,7 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const User = mongoose.model("User");
 const Destination = mongoose.model("Destination");
-const VendorRate = mongoose.model('VendorRate');
+// const VendorRate = mongoose.model('VendorRate');
 const nodemailer = require('nodemailer');
 const zipcodes = require('zipcodes');
 const config = require('../config')
@@ -40,14 +40,14 @@ router.get('/dashboard', async function(req, res) {
   res.status(200).send({status : 200, data : {shipment_count,active_vendor, customer_count, total_billing_price}})
 });
 
-router.get('/getAllVendorRates',async function(req,res){
-  let allRates = await VendorRate.find({}).populate('vendor_id');
-  if(allRates.length){
-    res.status(200).send({status:200, data:allRates});
-  }else{
-    res.status(500).send({status:500, message: 'No Rates Exist'})
-  }
-})
+// router.get('/getAllVendorRates',async function(req,res){
+//   let allRates = await VendorRate.find({}).populate('vendor_id');
+//   if(allRates.length){
+//     res.status(200).send({status:200, data:allRates});
+//   }else{
+//     res.status(500).send({status:500, message: 'No Rates Exist'})
+//   }
+// })
 
 router.post('/getVendorRates',async function(req, res){
   let origin_zip = req.body.origin;
