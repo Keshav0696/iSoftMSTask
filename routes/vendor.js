@@ -14,7 +14,7 @@ const mongoose = require('mongoose');
     FbaPalletRate = mongoose.model('FbaPalletRate');
     FbaContainerRate = mongoose.model('FbaContainerRate');
     ArrivingPort = mongoose.model('ArrivingPort')
-
+    FbaFtlRate =  mongoose.model('FbaFtlRate')
 
     function emailValidator(value){
       let pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -370,6 +370,69 @@ router.get('/deleteContainerRate/:id', async function (req, res) {
       res.send(removed);
     } else {
       res.status(500).send({status: 500, data: null, message: 'ContainerRate does not exist' }).end()
+    }
+  } else {
+    res.status(500).send({status: 500, data: null, message: 'Please send Vendor Id' }).end()
+  }
+})
+
+
+router.put('/editFtlRate/:id', async function (req, res) {
+  if(req.body && req.params.id) {
+    var edited = await FbaFtlRate.findOneAndUpdate({ _id: req.params.id }, {
+      $set:  req.body
+       },
+      {
+        new: true
+      });
+    if (edited) {
+      res.send(edited);
+    } else {
+      res.status(500).send({status: 500, data: null, message: "FbaFtlRate is not available"});
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+router.post('/saveFtlRate', async function (req, res) {
+  if(req.body) {
+    let toSave = new FbaFtlRate(req.body);
+    let saved = await toSave.save();
+    if(saved){
+      res.status(200).json(saved);
+    }else{
+      
+    res.status(500).json({ status: 500, data: null, message: "Problem with saveFtlRate" });
+
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+router.get('/getAllFtlRate/:id', async function (req, res) {
+  if (req.params.id) {
+    let allftlrates = await FbaFtlRate.find({ vendor_id: req.params.id }).populate('wareHouse');
+    if (allftlrates.length) {
+      res.status(200).send({ status: 200, data: allftlrates });
+    } else {
+      res.status(500).send({ status: 500, message: 'No FbaFtlRate Exist' })
+    }
+  } else {
+    res.status(500).send({ status: 500, message: 'Please Send User Id' })
+  }
+})
+
+
+router.get('/deleteFtlRate/:id', async function (req, res) {
+  if (req.params.id) {
+    var rateId = req.params.id;
+    var removed = await FbaFtlRate.remove({ _id: rateId });
+    if (removed.deletedCount) {
+      res.send(removed);
+    } else {
+      res.status(500).send({status: 500, data: null, message: 'FtlRate does not exist' }).end()
     }
   } else {
     res.status(500).send({status: 500, data: null, message: 'Please send Vendor Id' }).end()

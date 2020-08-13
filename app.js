@@ -22,6 +22,9 @@ require('./models/location');
 require('./models/accessoriesRate');
 require('./models/fbaPalletRates');
 require('./models/fbaContainerRates');
+require('./models/fbaFtlRate');
+
+
 
 const config = require('./config');
 const User = mongoose.model('User')
