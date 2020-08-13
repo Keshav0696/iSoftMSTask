@@ -9,6 +9,7 @@ const zipcodes = require('zipcodes');
 const config = require('../config')
 const Shipment = mongoose.model('Shipment');
 const FbaPalletRate = mongoose.model("FbaPalletRate");
+const FbaContainerRate = mongoose.model('FbaContainerRate');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -54,43 +55,106 @@ router.post('/getVendorRates',async function(req, res){
   let destination = req.body.destination;
   let mode = req.body.mode;
   let vendor_rates = [];
-  vendor_rates['fbaPallet'] = [];
-  // let allRates = await FbaPalletRate.find({}).populate('vendor_id').populate('fbaPallet.rates.wareHouse').populate('fbaPallet.rates.location');
-  let allRates = await FbaPalletRate.find({wareHouse : destination}).populate('vendor_id wareHouse location');
-  if(origin_zip && destination){
-    if(allRates.length){
-      for(var i=0; i<allRates.length; i++){
-        let freePickupRadius = allRates[i].freePickupRadius;
-             if(allRates[i].location.zip === origin_zip){
-              let obj = {
-                vendor : allRates[i].vendor_id,
-                rate   :  allRates[i]
-              }
-              vendor_rates['fbaPallet'].push(obj)
-             }else{
-               let zip_codes = zipcodes.radius(origin_zip, freePickupRadius);
-               if(zip_codes.includes(allRates[i].location.zip)){
-                let obj = {
-                  vendor : allRates[i].vendor_id,
-                  rate : allRates[i]
-                }
-                vendor_rates['fbaPallet'].push(obj);
-               }
-             }
-      }  
-      if(vendor_rates['fbaPallet'].length){
-        res.status(200).send({fbaPallet : vendor_rates['fbaPallet']});
+  if(mode ==="fbaPallet"){
+   getPalletRates(destination, origin_zip, vendor_rates).then(function(result,err){
+    if(result == '501'){
+      res.status(500).send({status :500, message : 'No Quotes Found'});
+    }else if(result == '502'){
+      res.status(500).send({status :500, message : 'No Rates for Destination'});
+    }else{
+      res.status(200).send(result);
+    }
+
+   });
+  }else if(mode ==="fbaContainer"){
+    getContainerRates(destination, origin_zip, vendor_rates).then(function(result,err){
+      if(result == '501'){
+        res.status(500).send({status :500, message : 'No Quotes Found'});
+      }else if(result == '502'){
+        res.status(500).send({status :500, message : 'No Rates for Destination'});
       }else{
-        res.status(500).send({status :500, message : 'No Quotes Found'})
+        res.status(200).send(result);
+      }
+  
+     });
+  }
+})
+
+
+async function getContainerRates(destination, origin_zip, vendor_rates){
+  return new Promise(async(resolve, rejects)=>{
+
+  vendor_rates['fbaContainer'] = [];
+  // let allRates = await FbaPalletRate.find({}).populate('vendor_id').populate('fbaPallet.rates.wareHouse').populate('fbaPallet.rates.location');
+  let allRates = await FbaContainerRate.find({ wareHouse: destination }).populate('vendor_id wareHouse arrivingPort');
+
+  if (origin_zip && destination) {
+    if (allRates.length) {
+      for (var i = 0; i < allRates.length; i++) {
+        if (allRates[i].arrivingPort.zip_code === origin_zip) {
+          let obj = {
+            vendor: allRates[i].vendor_id,
+            rate: allRates[i]
+          }
+          vendor_rates['fbaContainer'].push(obj)
+        } 
+      }
+      if (vendor_rates['fbaContainer'].length) {
+        resolve({ fbaContainer: vendor_rates['fbaContainer'] });
+      } else {
+        resolve('501');
       }
 
     }
-    else{
-      res.status(500).send({status :500, message : 'No Rates for Destination'});
+    else {
+      resolve('502');
     }
 
   }
 })
+}
+  async function getPalletRates(destination, origin_zip, vendor_rates){
+  return new Promise(async (resolve, rejects)=>{
+
+    vendor_rates['fbaPallet'] = [];
+    // let allRates = await FbaPalletRate.find({}).populate('vendor_id').populate('fbaPallet.rates.wareHouse').populate('fbaPallet.rates.location');
+    let allRates = await FbaPalletRate.find({ wareHouse: destination }).populate('vendor_id wareHouse location');
+
+    if (origin_zip && destination) {
+      if (allRates.length) {
+        for (var i = 0; i < allRates.length; i++) {
+          let freePickupRadius = allRates[i].freePickupRadius;
+          if (allRates[i].location.zip === origin_zip) {
+            let obj = {
+              vendor: allRates[i].vendor_id,
+              rate: allRates[i]
+            }
+            vendor_rates['fbaPallet'].push(obj)
+          } else {
+            let zip_codes = zipcodes.radius(origin_zip, freePickupRadius);
+            if (zip_codes.includes(allRates[i].location.zip)) {
+              let obj = {
+                vendor: allRates[i].vendor_id,
+                rate: allRates[i]
+              }
+              vendor_rates['fbaPallet'].push(obj);
+            }
+          }
+        }
+        if (vendor_rates['fbaPallet'].length) {
+          resolve({ fbaPallet: vendor_rates['fbaPallet'] });
+        } else {
+          resolve('501');
+        }
+
+      }
+      else {
+        resolve('502');
+      }
+
+    }
+  })
+  }
 
 function emailValidator(value){
   let pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
