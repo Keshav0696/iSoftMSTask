@@ -318,6 +318,7 @@ router.get('/deletePalletRate/:id', async function (req, res) {
 
 router.put('/editContainerRate/:id', async function (req, res) {
   if(req.body && req.params.id) {
+    req.body.expDate = new Date(req.body.expDate);
     var edited = await FbaContainerRate.findOneAndUpdate({ _id: req.params.id }, {
       $set:  req.body
        },
@@ -336,6 +337,7 @@ router.put('/editContainerRate/:id', async function (req, res) {
 
 router.post('/saveContainerRate', async function (req, res) {
   if(req.body) {
+    req.body.expDate = new Date(req.body.expDate);
     let toSave = new FbaContainerRate(req.body);
     let saved = await toSave.save();
     if(saved){
@@ -381,6 +383,7 @@ router.get('/deleteContainerRate/:id', async function (req, res) {
 
 router.put('/editFtlRate/:id', async function (req, res) {
   if(req.body && req.params.id) {
+    req.body.expDate = new Date(req.body.expDate);
     var edited = await FbaFtlRate.findOneAndUpdate({ _id: req.params.id }, {
       $set:  req.body
        },
@@ -399,6 +402,7 @@ router.put('/editFtlRate/:id', async function (req, res) {
 
 router.post('/saveFtlRate', async function (req, res) {
   if(req.body) {
+    req.body.expDate = new Date(req.body.expDate);
     let toSave = new FbaFtlRate(req.body);
     let saved = await toSave.save();
     if(saved){
