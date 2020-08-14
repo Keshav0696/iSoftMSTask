@@ -13,8 +13,8 @@ const mongoose = require('mongoose');
     // VendorRate = mongoose.model('VendorRate');
     FbaPalletRate = mongoose.model('FbaPalletRate');
     FbaContainerRate = mongoose.model('FbaContainerRate');
-    ArrivingPort = mongoose.model('ArrivingPort')
-    FbaFtlRate =  mongoose.model('FbaFtlRate')
+    ArrivingPort = mongoose.model('ArrivingPort');
+    FbaFtlRate =  mongoose.model('FbaFtlRate');
 
     function emailValidator(value){
       let pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -254,6 +254,7 @@ router.get('/deleteVendor/:id', async function (req, res) {
 
 router.put('/editPalletRate/:id', async function (req, res) {
   if(req.body && req.params.id) {
+    req.body.expDate = new Date(req.body.expDate);
     var edited = await FbaPalletRate.findOneAndUpdate({ _id: req.params.id }, {
       $set:  req.body
        },
@@ -272,6 +273,7 @@ router.put('/editPalletRate/:id', async function (req, res) {
 
 router.post('/savePalletRate', async function (req, res) {
   if(req.body) {
+    req.body.expDate = new Date(req.body.expDate);
     let toSave = new FbaPalletRate(req.body);
     let saved = await toSave.save();
     if(saved){
