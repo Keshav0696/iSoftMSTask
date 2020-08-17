@@ -131,7 +131,7 @@ async function getFtlRates(destination, origin_zip, vendor_rates){
           }
         }
         if (vendor_rates['fbaftl'].length) {
-          resolve({ fbaPallet: vendor_rates['fbaftl'] });
+          resolve({ fbaftl: vendor_rates['fbaftl'] });
         } else {
           resolve('501');
         }

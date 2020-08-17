@@ -151,6 +151,21 @@ router.get('/getShipmentByVendorId/:id', async (req, res) => {
   }
 });
 
+router.get('/getShipmentByMemberId/:id', async (req, res) => {
+  try {
+    var vendorId = req.params.id
+    let shipment = await Shipment.find({ user_id: vendorId }).populate('vendor_id modeType');
+    if (shipment && shipment.length) {
+      res.status(200).send({ status: 200, data: shipment }).end()
+    } else {
+      res.status(500).send({ status: 500, data: null, message: "Shipment not  found" }).end()
+    }
+  }
+  catch (e) {
+    console.log("exception with getShipmentByMemberId: ", e)
+  }
+});
+
 router.post("/downloadDoc", (req, res) => {
   const filePath = req.body.doc_path;
   const file = path.resolve(process.cwd() + '/' + filePath);
