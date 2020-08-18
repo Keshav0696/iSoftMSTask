@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model("User");
 const Destination = mongoose.model("Destination");
 // const VendorRate = mongoose.model('VendorRate');
+const {ObjectId} = require('mongodb');
 const nodemailer = require('nodemailer');
 const zipcodes = require('zipcodes');
 const config = require('../config')
@@ -26,21 +27,33 @@ router.get('/getAllDestination', async function(req, res){
 
       }
 })
-router.get('/dashboard', async function(req, res) {
-  let shipment_count =	await Shipment.count();
-  let active_vendor = await User.find({status : 'active', role : "VENDOR"}, {status:1}).count();
-  let customer_count = await User.find({role : "MEMBER"}, {email : 1}).count();
+router.post('/dashboard', async function(req, res) {
+  if(!req.body.user_id && !req.body.vendor_id){
+  var active_vendor = await User.find({status : 'active', role : "VENDOR"}, {status:1}).count();
+  var customer_count = await User.find({role : "MEMBER"}, {email : 1}).count();
+  }
   var date = new Date();
   var firstDay = new Date(date.getFullYear(), 0, 1);
   var lastDay = new Date(date.getFullYear(), 12, 0);
+  for(var p in req.body){
+    req.body[p] = ObjectId(req.body[p]);
+  }
   let total_billing_price = await Shipment.aggregate([{
+    $match : req.body},
+    {
     $group:
     {
       _id: {  year: { $year: "$create_at" } },
       totalAmount: { $sum:  "$price"},
+      count:{$sum:1}
     }
     }]);
-  res.status(200).send({status : 200, data : {shipment_count,active_vendor, customer_count, total_billing_price}})
+  res.status(200).send({status : 200, data :
+     {shipment_count : total_billing_price[0].count,
+      active_vendor: active_vendor || 0, 
+      customer_count: customer_count ||0,
+      total_billing_price }
+    })
 });
 
 // router.get('/getAllVendorRates',async function(req,res){
