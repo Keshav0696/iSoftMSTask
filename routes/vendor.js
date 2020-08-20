@@ -496,16 +496,7 @@ router.put('/editFtlRate/:id', async function (req, res) {
   }
 });
 
-router.get('/getAllArrivingPort', async function (req, res) {
 
-  let found = await ArrivingPort.find({});
-   if(found){
-      res.status(200).json(found);
-   }else{
-       res.status(500).json({ status: 500, data: null, message: "No data exist" });
-   }
-
-});
 
 router.post('/saveLocations', async function (req, res) {
   if(req.body) {

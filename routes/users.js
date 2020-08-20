@@ -5,8 +5,9 @@ var bcrypt = require('bcryptjs');
 const config = require('../config')
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
-
+const Destination = mongoose.model("Destination");
 const User = mongoose.model('User');
+const Port = mongoose.model('ArrivingPort');
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   res.send('respond with a resource');
@@ -190,6 +191,135 @@ router.get('/deleteUser/:id', async function (req, res) {
   }
 })
 
+router.post('/saveWarehouse', async function (req, res) {
+  if(req.body) {
+    if(req.user.role=='ADMIN'){
+
+    let toSave = new Destination(req.body);
+    let saved = await toSave.save();
+    if(saved){
+      res.status(200).json(saved);
+    }else{
+      
+    res.status(500).json({ status: 500, data: null, message: "Problem with saveWareHouse" });
+
+    }
+  }
+  else{
+      res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+
+router.put('/editWareHouse/:id', async function (req, res) {
+  if(req.body && req.params.id) {
+      if(req.user.role=='ADMIN'){
+    var edited = await Destination.findOneAndUpdate({ _id: req.params.id }, {
+      $set:  req.body
+       },
+      {
+        new: true
+      });
+    if (edited) {
+      res.send(edited);
+    } else {
+      res.status(500).send({status: 500, data: null, message: "WareHouse is not available"});
+    }
+    }
+  else{
+      res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+router.get('/deleteWareHouse/:id', async function (req, res) {
+    if (req.params.id) {
+       if(req.user.role=='ADMIN'){
+      var locationId = req.params.id;
+      var removed = await Destination.remove({ _id: locationId });
+      if (removed.deletedCount) {
+        res.send(removed);
+      } else {
+        res.status(500).send({status: 500, data: null, message: 'WareHouse does not exist' }).end()
+      }
+      }
+    else{
+      res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+    }
+    } else {
+      res.status(500).send({status: 500, data: null, message: 'Please send WareHouse Id' }).end()
+    }
+  })
+
+router.post('/savePort', async function (req, res) {
+  if(req.body) {
+    if(req.user.role=='ADMIN'){
+
+    let toSave = new Port(req.body);
+    let saved = await toSave.save();
+    if(saved){
+      res.status(200).json(saved);
+    }else{
+      
+    res.status(500).json({ status: 500, data: null, message: "Problem with savePorts" });
+
+    }
+  }
+  else{
+      res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+
+router.put('/editPort/:id', async function (req, res) {
+  if(req.body && req.params.id) {
+      if(req.user.role=='ADMIN'){
+    var edited = await Port.findOneAndUpdate({ _id: req.params.id }, {
+      $set:  req.body
+       },
+      {
+        new: true
+      });
+    if (edited) {
+      res.send(edited);
+    } else {
+      res.status(500).send({status: 500, data: null, message: "Port is not available"});
+    }
+    }
+  else{
+      res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+    }
+  } else {
+    res.status(500).json({ status: 500, data: null, message: "Please enter all required fields" });
+  }
+});
+
+router.get('/deletePort/:id', async function (req, res) {
+    if (req.params.id) {
+       if(req.user.role=='ADMIN'){
+      var locationId = req.params.id;
+      var removed = await Port.remove({ _id: locationId });
+      if (removed.deletedCount) {
+        res.send(removed);
+      } else {
+        res.status(500).send({status: 500, data: null, message: 'Port does not exist' }).end()
+      }
+      }
+    else{
+      res.status(500).json({status : 500, message: 'Role do not have access' }).end()  
+    }
+    } else {
+      res.status(500).send({status: 500, data: null, message: 'Please send Port Id' }).end()
+    }
+  })
 
 
 // // Endpoint to get current user

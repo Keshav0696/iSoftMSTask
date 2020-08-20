@@ -27,6 +27,18 @@ router.get('/getAllDestination', async function(req, res){
 
       }
 })
+
+router.get('/getAllArrivingPort', async function (req, res) {
+  let found = await ArrivingPort.find({});
+   if(found){
+      res.status(200).json(found);
+   }else{
+       res.status(500).json({ status: 500, data: null, message: "No data exist" });
+   }
+
+});
+
+
 router.post('/dashboard', async function(req, res) {
   if(!req.body.user_id && !req.body.vendor_id){
   var active_vendor = await User.find({status : 'active', role : "VENDOR"}, {status:1}).count();
@@ -273,15 +285,14 @@ function sendMail(user){
 
 
 router.post('/editShipper', async function(req,res){
-  req.body.type = 'local';
-  req.body.status = 'active';
-  req.body.role = req.body.role || "MEMBER"; 
   if(req.body.email && req.body.phoneNo && emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
   var newUser = new User(req.body);
   var found = await User.findOne({ email: req.body.email});
   let shipment = {};
 if(!found){
-  
+  req.body.type = 'local';
+  req.body.status = 'active';
+  req.body.role = req.body.role || "MEMBER"; 
   User.createUser(newUser,async  function(err, user){
     try{
     if(err) throw new Error(err);
