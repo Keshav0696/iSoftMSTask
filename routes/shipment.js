@@ -139,7 +139,7 @@ router.post('/saveShipdoc', async (req, res) => {
 router.get('/getShipmentByVendorId/:id', async (req, res) => {
   try {
     var vendorId = req.params.id
-    let shipment = await Shipment.find({ vendor_id: vendorId }).populate('vendor_id modeType');
+    let shipment = await Shipment.find({ $or : [{vendor_id: vendorId}, {user_id : vendorId}] }).populate('vendor_id modeType');
     if (shipment && shipment.length) {
       res.status(200).send({ status: 200, data: shipment }).end()
     } else {
