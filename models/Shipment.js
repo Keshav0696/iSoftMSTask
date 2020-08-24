@@ -93,7 +93,7 @@ var ShipmentSchema = mongoose.Schema({
   },
   status : {
       type : String,
-      enum: [ "BOOKED", "INTRANSIT", "DELIVERED", "INVOICED", "ARCHIVED"]
+      enum: [ "BOOKED", "INTRANSIT", "DELIVERED", "CHECKEDIN", "LASTLY", "FINALLYEXCEPTION", "CANCELLED"]
   },
   paymentStatus : {
     type: String,

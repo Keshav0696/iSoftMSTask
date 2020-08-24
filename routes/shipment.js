@@ -215,7 +215,7 @@ router.post("/updateShimentStatus",async (req, res) => {
            if(err){
              res.status(500).send({status: 500, data: null, message: "Problem with Send mail"}).end();
            }else{
-            res.status(200).send({status: 200, data: null, message: "Update status and mail sent successfully"}).end();
+            res.status(200).send({status: 200, data: saved, message: "Update status and mail sent successfully"}).end();
            }
         });
         }else{
