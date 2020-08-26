@@ -60,12 +60,20 @@ router.post('/dashboard', async function(req, res) {
       count:{$sum:1}
     }
     }]);
+  if(total_billing_price && total_billing_price.length){
   res.status(200).send({status : 200, data :
      {shipment_count : total_billing_price[0].count,
       active_vendor: active_vendor || 0, 
       customer_count: customer_count ||0,
       total_billing_price }
     })
+}else{
+    res.status(200).send({status : 200, data :
+     {shipment_count : 0,
+      active_vendor: active_vendor || 0, 
+      customer_count: customer_count ||0}
+    })
+}
 });
 
 // router.get('/getAllVendorRates',async function(req,res){
@@ -262,6 +270,7 @@ function sendMail(user){
           host: config.SMTP_HOST,
           secure : true,
           port: config.SMTP_PORT,
+            //  service: 'gmail',
           auth: {
             user: config.SMTP_USER,
             pass: config.SMTP_PASSWORD

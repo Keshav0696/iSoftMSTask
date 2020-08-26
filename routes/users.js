@@ -4,10 +4,13 @@ var passport = require('passport');
 var bcrypt = require('bcryptjs');
 const config = require('../config')
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const Destination = mongoose.model("Destination");
 const User = mongoose.model('User');
 const Port = mongoose.model('ArrivingPort');
+const passwordResetToken = require('../models/ResetPassword');
+
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   res.send('respond with a resource');
@@ -96,8 +99,14 @@ router.post('/createUser', async function(req, res){
     User.createUser(newUser, function(err, user){
       try{
       if(err) throw new Error(err);
-      sendMail(user);
-      res.status(200).send({status: 200, data: newUser}).end()
+      var resettoken = new passwordResetToken({ _userId: user._id, resettoken: crypto.randomBytes(16).toString('hex') });
+      resettoken.save(async function (err) {
+        if (err) { return res.status(500).send({ msg: err.message }); }
+        passwordResetToken.find({ _userId: user._id, resettoken: { $ne: resettoken.resettoken } }).remove().exec();
+        sendMail(user, resettoken);
+        res.status(200).send({status: 200, data: newUser, message: 'Reset Password successfully.'}).end()
+        })
+
     }
     catch(e){
       console.log(e)
@@ -114,7 +123,7 @@ router.post('/createUser', async function(req, res){
 
 });
 
-function sendMail(user){
+function sendMail(user,resettoken){
   var transporter = nodemailer.createTransport({
     host: config.SMTP_HOST,
     secure : true,
@@ -131,7 +140,7 @@ function sendMail(user){
     subject: 'Welcome to the FBA Delivery',
     html: `<p> Welcome ${user.firstname} ${user.lastname}</p>
     <p>Please click the Link Reset The Password </p>
-     <a href ="http://localhost:4200/resetPassword/">Reset Password</a>
+     <a href ="http://localhost:4200/resetPassword/${resettoken.resettoken}">Reset Password</a>
             `
   };
   transporter.sendMail(mailOptions, function(err){
