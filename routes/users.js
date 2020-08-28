@@ -100,11 +100,12 @@ router.post('/createUser', async function(req, res){
       try{
       if(err) throw new Error(err);
       var resettoken = new passwordResetToken({ _userId: user._id, resettoken: crypto.randomBytes(16).toString('hex') });
+      res.status(200).send({status: 200, data: newUser});
       resettoken.save(async function (err) {
         if (err) { return res.status(500).send({ msg: err.message }); }
         passwordResetToken.find({ _userId: user._id, resettoken: { $ne: resettoken.resettoken } }).remove().exec();
         sendMail(user, resettoken);
-        res.status(200).send({status: 200, data: newUser, message: 'Reset Password successfully.'}).end()
+        // res.status(200).send({status: 200, message: 'Reset Password successfully.'}).end()
         })
 
     }

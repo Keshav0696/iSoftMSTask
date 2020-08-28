@@ -57,7 +57,7 @@ router.post('/login', function (req, res, next) {
       if (err || !user) {
           return res.status(400).json({
               status : 400,
-              message: 'Invalid Email or Password',
+              message: err?err : 'Invalid Email or Password',
               user   : user
           });
       }
@@ -85,14 +85,18 @@ passport.use(new LocalStrategy({
       if(!user){
         return done(null, false, {message: 'Unknown User'});
       }
+      if(user.password){
       User.comparePassword(password, user.password, function(err, isMatch){
         if(err) throw err;
      	if(isMatch){
      	  return done(null, user);
      	} else {
-     	  return done(null, false, {message: 'Invalid password'});
+     	  return done(null, false, {message: 'Invalid '});
      	}
      });
+    }else{
+      return done(null, false, {message: 'Please reset the password'});
+    }
    });
   }
 ));
@@ -207,6 +211,7 @@ router.post('/google/token',
         var transporter = nodemailer.createTransport({
           host: config.SMTP_HOST,
           secure : true,
+          service : 'gmail',
           port: config.SMTP_PORT,
           auth: {
             user: config.SMTP_USER,
@@ -217,10 +222,10 @@ router.post('/google/token',
         to: user.email,
         from: config.SMTP_FROM,
         subject: 'Reset Password Request',
-        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-        'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-        'https://fba.udaantechnologies.com/resetPassword/' + resettoken.resettoken + '\n\n' +
-        'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+        text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.
+        Please click on the following link, or paste this into your browser to complete the process:\n
+        <a href ="https://fba.udaantechnologies.com/resetPassword/${resettoken.resettoken}">Reset Password</a>  \n
+        If you did not request this, please ignore this email and your password will remain unchanged.\n`
         }
         transporter.sendMail(mailOptions, (err, info) => {
             if(!err){
