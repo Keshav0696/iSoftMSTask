@@ -12,6 +12,7 @@ const Shipment = mongoose.model('Shipment');
 const FbaPalletRate = mongoose.model("FbaPalletRate");
 const FbaContainerRate = mongoose.model('FbaContainerRate');
 const FbaFtlRate =  mongoose.model('FbaFtlRate');
+var ShipmentMode = mongoose.model('ShipmentMode');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -291,7 +292,16 @@ function sendMail(user){
   });
 }
 
+router.get('/getAllShipmentMode', async function (req, res) {
 
+    let found = await ShipmentMode.find({})
+     if(found){
+        res.status(200).json(found);
+     }else{
+         res.status(500).json({ status: 500, data: null, message: "No data exist" });
+     }
+
+ });
 
 router.post('/editShipper', async function(req,res){
   if(req.body.email && req.body.phoneNo && emailValidator(req.body.email) && phoneNoValidator(req.body.phoneNo)){
