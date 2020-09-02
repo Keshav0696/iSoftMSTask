@@ -128,7 +128,7 @@ function sendMail(user,resettoken){
   var transporter = nodemailer.createTransport({
     host: config.SMTP_HOST,
     secure : true,
-    service: 'gmail',
+    // service: 'gmail',
     port: config.SMTP_PORT,
     auth: {
       user: config.SMTP_USER,

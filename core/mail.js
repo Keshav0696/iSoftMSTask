@@ -6,7 +6,7 @@ var sendMail = function (mailObj){
     return new Promise((resolve, rejects)=>{
         var transporter = nodemailer.createTransport({
               host: config.SMTP_HOST,
-              secure : true,
+              // secure : true,
               port: config.SMTP_PORT,
               auth: {
                 user: config.SMTP_USER,
