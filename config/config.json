@@ -1,11 +1,4 @@
 {
-    "appName": "FBADeliveryApp",
     "url": "http://localhost:3000/",
-    "dbURI": "mongodb://localhost:27017/fbadelivery",
-    "sessionSecret": "testappudaan",
-    "SMTP_HOST": "mail.fbaxchange.com",
-    "SMTP_PORT": 465,
-    "SMTP_USER": "support@fbaxchange.com",
-    "SMTP_PASSWORD":"iEzC({Zty!?y",
-    "SMTP_FROM": "support@fbaxchange.com"
+    "dbURI": "mongodb://localhost:27017/myTestAPP"
   }
