@@ -4,7 +4,6 @@ var mongoose = require('mongoose');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-require('./models');
 require('./models/User');
 
 
